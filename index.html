@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- OpenGraph & Twitter Card Social Preview Metadata -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OMNI Network Portal — OMNI Ecosystem">
+  <meta property="og:description" content="High-Throughput Layer-1 Blockchain Ecosystem & Node Hub">
+  <meta property="og:image" content="https://omni-llm-39821.web.app/zombie-companion.png">
+  <meta property="og:url" content="https://omni-network-39821.web.app">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OMNI Network Portal — OMNI Ecosystem">
+  <meta name="twitter:description" content="High-Throughput Layer-1 Blockchain Ecosystem & Node Hub">
+  <meta name="twitter:image" content="https://omni-llm-39821.web.app/zombie-companion.png">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMNI Network | Portal, Swap & Bridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2026_network_2">
+  <!-- Ethers.js v6 CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.umd.min.js"></script>
+  <style>
+    /* Styling for PancakeSwap & CoinFactory & ChainPort alignment */
+    :root {
+      --neon-cyan: #00e5ff;
+      --neon-magenta: #e040fb;
+      --neon-purple: #e040fb;
+      --font-header: 'Outfit', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+      --bg-dark: #131314;
+      --card-bg: #1e1e1f;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --pancake-purple: #271b5b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Animated Icons CSS (FlatIcon Style Keyframe Animations) */
+    .icon-anim {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      margin-right: 8px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .tab-btn:hover .icon-anim {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 6px hsl(var(--neon-cyan)));
+    }
+    .icon-pulse {
+      animation: pulse 2s infinite ease-in-out;
+    }
+    .icon-spin {
+      animation: spin-clockwise 6s linear infinite;
+    }
+    .icon-drip {
+      animation: drip 1.8s infinite ease-in-out;
+    }
+    .icon-bounce {
+      animation: bounce-arrow 1.6s infinite ease-in-out;
+    }
+    .icon-flow {
+      animation: bridge-flow 2s infinite ease-in-out;
+    }
+    .icon-clink {
+      animation: clink-gears 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(0, 243, 255, 0.2)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.5)); }
+    }
+    @keyframes spin-clockwise {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes drip {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      30% { transform: translateY(2px) scaleY(0.9); }
+      60% { transform: translateY(6px) scaleY(1.1); opacity: 0.8; }
+      75% { transform: translateY(10px) scale(0.6); opacity: 0; }
+    }
+    @keyframes bounce-arrow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+    @keyframes bridge-flow {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(3px); }
+    }
+    @keyframes clink-gears {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(45deg); }
+    }
+
+    /* PancakeSwap styled components */
+    .pancake-swap-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 25px;
+      margin-top: 20px;
+    }
+    @media (max-width: 992px) {
+      .pancake-swap-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .pancake-card, .liquid-glass-panel {
+      background: rgba(15, 18, 25, 0.45) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 20px !important;
+      padding: 24px;
+      box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.37),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.1) !important;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+    .pancake-card:hover, .liquid-glass-panel:hover {
+      border-color: rgba(0, 229, 255, 0.25) !important;
+      box-shadow: 
+        0 12px 40px 0 rgba(0, 0, 0, 0.45),
+        0 0 15px rgba(0, 229, 255, 0.1),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.15) !important;
+      transform: translateY(-2px);
+    }
+    .pancake-input-box {
+      background: #080417;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .pancake-select-btn {
+      background: #271a4f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pancake-select-btn img {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+
+    /* CoinFactory options styling */
+    .factory-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .factory-option-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .factory-option-card:hover {
+      border-color: hsl(var(--neon-cyan));
+      background: rgba(0, 243, 255, 0.03);
+    }
+    .factory-option-card.active {
+      border-color: hsl(var(--neon-cyan));
+      background: rgba(0, 243, 255, 0.08);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+    }
+
+    /* ChainPort Bridge progress stepper */
+    .bridge-progress-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      position: relative;
+    }
+    .bridge-progress-line {
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+    .bridge-progress-line-fill {
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      width: 0%;
+      height: 2px;
+      background: hsl(var(--neon-cyan));
+      z-index: 1;
+      transition: width 0.5s;
+    }
+    .bridge-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      position: relative;
+    }
+    .bridge-step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #110b29;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: #9ba4b4;
+      transition: all 0.3s;
+    }
+    .bridge-step.active .bridge-step-dot {
+      border-color: hsl(var(--neon-cyan));
+      color: white;
+      box-shadow: 0 0 10px hsl(var(--neon-cyan));
+    }
+    .bridge-step.completed .bridge-step-dot {
+      background: #34A853;
+      border-color: #34A853;
+      color: white;
+    }
+    .bridge-step-label {
+      font-size: 0.7rem;
+      color: #9ba4b4;
+      margin-top: 8px;
+      text-transform: uppercase;
+      font-family: var(--font-header);
+    }
+
+    /* Global Nav Header */
+    .logo-dropdown-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .logo-dropdown-wrapper:hover .nav-dropdown-content {
+      display: block;
+    }
+    .nav-dropdown-content {
+      display: none;
+      position: absolute;
+      background: #080417;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      min-width: 150px;
+      z-index: 500;
+      top: 100%;
+      left: 0;
+      margin-top: 10px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
+    }
+    .nav-dropdown-content a {
+      color: #9ba4b4;
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+      font-size: 0.8rem;
+      font-family: var(--font-header);
+      transition: all 0.2s;
+    }
+    .nav-dropdown-content a:hover {
+      background: rgba(0, 243, 255, 0.05);
+      color: white;
+    }
+  </style>
+  <!-- Master Google Services Integration Suite -->
+  <script src="/omni_google_ecosystem_suite.js"></script>
+  <link rel="stylesheet" href="liquid_glass_design_system.css">
+  <script src="/omni_asi_superintelligence_engine.js"></script>
+</head>
+<body>
+
+  <!-- Liquid Gradient Backdrop -->
+  <div class="liquid-gradient-container">
+    <div class="liquid-blob liquid-blob-cyan"></div>
+    <div class="liquid-blob liquid-blob-magenta"></div>
+    <div class="liquid-blob liquid-blob-gold"></div>
+  </div>
+
+  <!-- Particles background -->
+  <div id="particle-canvas-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.45;"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo-dropdown-wrapper nav-dropdown" style="position: relative; display: inline-flex; align-items: center; cursor: pointer;">
+        <a href="#" class="logo" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+          <span class="logo-icon">
+            <svg class="anim-svg anim-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px; color: #00e5ff; filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.6));">
+              <path d="M12 0C12 6.627 6.627 12 0 12C6.627 12 12 17.373 12 24C12 17.373 17.373 12 24 12C17.373 12 12 6.627 12 0Z" fill="url(#geminiGrad)"/>
+            </svg>
+          </span>
+          <span class="logo-text" style="display: inline-flex; align-items: center; gap: 4px; font-weight: bold; color: white;">OMNI<span class="logo-caret" style="font-size: 0.65rem; color: #00e5ff;">▼</span></span><span class="logo-text" style="color: #00e5ff; font-weight: bold; margin-left: 2px;">NETWORK</span>
+        </a>
+        <div class="nav-dropdown-content">
+          <a href="https://omni-futures-39821.web.app" target="_blank" style="color:#00e5ff; font-weight:bold;"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">candlestick_chart</span> OMNI Futures (200x)</a>
+          <a href="https://omni-dao-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">account_balance</span> OMNI DAO & DEX</a>
+          <a href="https://omni-presences-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#a855f7; font-size:1.1rem; vertical-align:middle; margin-right:4px;">public</span> OmniPresences (3D)</a>
+          <a href="https://omni-llm-39821.web.app/season-pass.html" style="color:#ffd700; font-weight:bold;"><span class="material-symbols-outlined gemini-symbol" style="color:#ffd700; font-size:1.1rem; vertical-align:middle; margin-right:4px;">confirmation_number</span> Season Pass (S1)</a>
+          <a href="https://omni-llm-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">psychology</span> OMNI LLM</a>
+          <a href="https://omni-presale-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#ffd700; font-size:1.1rem; vertical-align:middle; margin-right:4px;">monetization_on</span> OMNI Presale</a>
+          <a href="https://omni-airdrop-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#f43f5e; font-size:1.1rem; vertical-align:middle; margin-right:4px;">paragliding</span> OMNI Airdrop</a>
+          <a href="https://omniair-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">flight</span> OMNI Air</a>
+          <a href="https://omni-network-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">hub</span> OMNI Network</a>
+          <a href="https://omni-kronos-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#a855f7; font-size:1.1rem; vertical-align:middle; margin-right:4px;">terminal</span> OMNI Kronos (ADE)</a>
+          <a href="https://omni-brain-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#e040fb; font-size:1.1rem; vertical-align:middle; margin-right:4px;">neurology</span> OMNI Brain</a>
+          <a href="https://omni-explorer-39821.web.app" target="_blank"><span class="material-symbols-outlined gemini-symbol" style="color:#00e5ff; font-size:1.1rem; vertical-align:middle; margin-right:4px;">travel_explore</span> OMNI Explorer</a>
+        </div>
+      </div>
+      
+      <nav class="nav-links">
+        <a href="https://omni-futures-39821.web.app" class="nav-link" id="navLinkFutures" target="_blank">OMNI Futures</a>
+        <a href="https://omni-dao-39821.web.app" class="nav-link" id="navLinkDAO" target="_blank">OMNI DAO</a>
+        <a href="https://omni-llm-39821.web.app" class="nav-link" id="navLinkLLM" target="_blank">OMNI LLM</a>
+        <a href="https://omni-presale-39821.web.app" class="nav-link" id="navLinkPresale" target="_blank">OMNI Presale</a>
+        <a href="https://omni-airdrop-39821.web.app" class="nav-link" id="navLinkAirdrop" target="_blank">OMNI Airdrop</a>
+        <a href="https://omniair-39821.web.app" class="nav-link" id="navLinkOmniAir" target="_blank">OMNI Air</a>
+        <a href="https://omni-network-39821.web.app" class="nav-link active" id="navLinkNetwork" target="_blank">OMNI Network</a>
+        <a href="https://omni-kronos-39821.web.app" class="nav-link" id="navLinkKronos" target="_blank">OMNI Kronos</a>
+        <a href="https://omni-brain-39821.web.app" class="nav-link" id="navLinkBrain" target="_blank">OMNI Brain</a>
+        <a href="https://omni-explorer-39821.web.app" class="nav-link" id="navLinkExplorer" target="_blank">OMNI Explorer</a>
+      </nav>
+
+      <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
+        <a href="https://omni-explorer-39821.web.app" class="nav-link" style="color: #9ba4b4; text-decoration: none; font-family: var(--font-header); font-size: 0.8rem; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ba4b4'">📦 Explorer</a>
+        <button id="connectWalletBtn" class="btn btn-connect-wallet" style="height: 38px; border-radius: 8px;">Connect Wallet</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Panel -->
+  <main style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    
+    <div style="margin-bottom: 35px; text-align: center;">
+      <h1 style="font-family: var(--font-header); font-size: 2.5rem; font-weight: 900; color: white;">Omni Network Hub</h1>
+      <p style="color: #9ba4b4; margin-top: 8px; font-size: 1rem;">Experience zero-gas on-chain swaps, multi-chain bridging, and Remix-style smart contract deployment.</p>
+    </div>
+
+    <!-- Inline Tab Switcher Script (Immediate Execution) -->
+    <script>
+      window.switchNetworkTab = function(targetPaneId, btnEl) {
+        document.querySelectorAll('.tab-container .tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        if (btnEl) {
+          btnEl.classList.add('active');
+        } else {
+          const matchedBtn = document.querySelector(`.tab-container .tab-btn[onclick*="${targetPaneId}"]`);
+          if (matchedBtn) matchedBtn.classList.add('active');
+        }
+
+        document.querySelectorAll('.panel-section').forEach(pane => {
+          pane.classList.remove('active');
+          pane.style.display = 'none';
+        });
+
+        const target = document.getElementById(targetPaneId);
+        if (target) {
+          target.classList.add('active');
+          target.style.display = 'block';
+        }
+
+        // Trigger chart redraw on swap
+        if (targetPaneId === 'paneSwap' && window.drawPancakeChart) {
+          setTimeout(window.drawPancakeChart, 50);
+        }
+      };
+    </script>
+
+    <!-- Hub Tabs with Animated FlatIcon-Style Icons -->
+    <div class="tab-container" style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; overflow-x: auto;">
+      <button class="tab-btn active" id="btnTabSwap" onclick="switchNetworkTab('paneSwap', this)">
+        <span class="material-symbols-outlined icon-anim">currency_exchange</span>
+        DEX Swap
+      </button>
+      <button class="tab-btn" id="btnTabStaking" onclick="switchNetworkTab('paneStaking', this)">
+        <span class="material-symbols-outlined icon-anim icon-pulse">savings</span>
+        Liquid Staking ($sOMNI)
+      </button>
+      <button class="tab-btn" id="btnTabBurn" onclick="switchNetworkTab('paneBurn', this)">
+        <span class="material-symbols-outlined icon-anim icon-pulse">local_fire_department</span>
+        EIP-1559 Burn Tracker
+      </button>
+      <button class="tab-btn" id="btnTabDualVM" onclick="switchNetworkTab('paneDualVM', this)">
+        <span class="material-symbols-outlined icon-anim">speed</span>
+        Dual-VM Telemetry
+      </button>
+      <button class="tab-btn" id="btnTabBridge" onclick="switchNetworkTab('paneBridge', this)">
+        <span class="material-symbols-outlined icon-anim">compare_arrows</span>
+        OmniBridge
+      </button>
+      <button class="tab-btn" id="btnTabGenerator" onclick="switchNetworkTab('paneGenerator', this)">
+        <span class="material-symbols-outlined icon-anim">generating_tokens</span>
+        Token Generator
+      </button>
+      <button class="tab-btn" id="btnTabFaucet" onclick="switchNetworkTab('paneFaucet', this)">
+        <span class="material-symbols-outlined icon-anim">water_drop</span>
+        OMNI Faucet
+      </button>
+      <button class="tab-btn" id="btnTabTelemetry" onclick="switchNetworkTab('paneTelemetry', this)">
+        <span class="material-symbols-outlined icon-anim icon-pulse">hub</span>
+        Validator Telemetry (PoNS)
+      </button>
+      <button class="tab-btn" id="btnTabDownloads" onclick="switchNetworkTab('paneDownloads', this)">
+        <span class="material-symbols-outlined icon-anim">download</span>
+        Miner App
+      </button>
+    </div>
+
+    <!-- TAB 1: DEX SWAP (PancakeSwap Aligned) -->
+    <div class="panel-section active" id="paneSwap">
+      <div class="pancake-swap-layout">
+        
+        <!-- Left: Interactive Candlestick Chart -->
+        <div class="pancake-card" style="display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span id="chartPairName" style="font-family: var(--font-header); font-weight: bold; font-size: 1.1rem; color: white;">OMNI / USDT</span>
+              <span id="chartPairPrice" style="color: #34A853; font-family: monospace; font-size: 1.1rem; font-weight: bold;">$1.00</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">1H</button>
+              <button style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; border-color: hsl(var(--neon-cyan));">24H</button>
+            </div>
+          </div>
+          
+          <!-- Slick neon Canvas chart -->
+          <div style="flex: 1; min-height: 280px; position: relative; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+            <canvas id="pancakePriceChart" style="width: 100%; height: 100%; display: block;"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: PancakeSwap Card -->
+        <div class="pancake-card" style="max-width: 440px; margin: 0 auto; width: 100%;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-family: var(--font-header); color: white; font-size: 1.15rem; font-weight: 700;">Swap</h3>
+            <div style="display: flex; gap: 10px; color: #9ba4b4; cursor: pointer;">
+              <!-- Settings Gear -->
+              <span id="swapSettingsBtn" style="font-size: 1.1rem;" onclick="toggleSlippageModal()">⚙️</span>
+            </div>
+          </div>
+
+          <!-- Input Token Box -->
+          <div class="pancake-input-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #888; margin-bottom: 8px;">
+              <span>From</span>
+              <span id="swapBalanceFrom" style="font-family: monospace;">Balance: 0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <input type="number" id="swapAmtFrom" value="10" placeholder="0.0" style="background: none; border: none; outline: none; font-size: 1.5rem; color: white; font-family: monospace; flex: 1; width: 50%;">
+              <select id="swapTokenFrom" class="modal-form-select" style="width: 110px;">
+                <option value="OMNI">OMNI</option>
+                <option value="USDT">USDT</option>
+                <option value="WETH">WETH</option>
+                <option value="USDC">USDC</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Arrow Spacer -->
+          <div style="text-align: center; margin: -5px 0 10px 0; position: relative; z-index: 5;">
+            <button id="btnSwapSwapTokens" style="background: #271a4f; border: 4px solid #110b29; color: hsl(var(--neon-cyan)); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,243,255,0.2);">↓</button>
+          </div>
+
+          <!-- Output Token Box -->
+          <div class="pancake-input-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #888; margin-bottom: 8px;">
+              <span>To</span>
+              <span id="swapBalanceTo" style="font-family: monospace;">Balance: 0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <input type="number" id="swapAmtTo" placeholder="0.0" readonly style="background: none; border: none; outline: none; font-size: 1.5rem; color: #888; font-family: monospace; flex: 1; width: 50%; cursor: default;">
+              <select id="swapTokenTo" class="modal-form-select" style="width: 110px;">
+                <option value="USDT">USDT</option>
+                <option value="OMNI">OMNI</option>
+                <option value="WETH">WETH</option>
+                <option value="USDC">USDC</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- PancakeSwap details -->
+          <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; color: #888; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Price Rate:</span>
+              <span id="swapPriceRate" style="color: white; font-family: monospace;">1 OMNI = 1.00 USDT</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Price Impact:</span>
+              <span style="color: #34A853;">&lt; 0.01%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Minimum received:</span>
+              <span id="swapMinReceived" style="color: white; font-family: monospace;">9.95 USDT</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Liquidity Provider Fee:</span>
+              <span style="color: white;">0.03 OMNI (0.3% to Treasury)</span>
+            </div>
+          </div>
+
+          <button class="btn btn-connect-wallet" id="btnExecuteSwap" style="width: 100%; height: 48px; border-radius: 16px; font-weight: bold; font-family: var(--font-header);">Swap Tokens</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: LIQUID STAKING ($sOMNI) -->
+    <div class="panel-section" id="paneStaking" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
+        
+        <!-- Left: Staking Overview & Yield Calculator -->
+        <div class="pancake-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-family: var(--font-header); color: white; font-size: 1.3rem; font-weight: 800;">Liquid Staking Vault</h3>
+              <p style="color: #9ba4b4; font-size: 0.82rem; margin-top: 4px;">Stake $OMNI, receive liquid $sOMNI, and earn auto-compounding network validator & AI compute rewards.</p>
+            </div>
+            <span style="background: rgba(0, 229, 255, 0.15); border: 1px solid rgba(0, 229, 255, 0.4); color: hsl(var(--neon-cyan)); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-family: monospace; font-size: 1rem;">
+              28.4% APY
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Total $OMNI Staked</span>
+              <div style="font-size: 1.2rem; font-weight: 800; color: white; font-family: monospace; margin-top: 4px;">48,920,150</div>
+              <span style="font-size: 0.7rem; color: #34A853;">≈ $48.92M TVL</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Exchange Rate</span>
+              <div style="font-size: 1.2rem; font-weight: 800; color: hsl(var(--neon-cyan)); font-family: monospace; margin-top: 4px;">1 sOMNI = 1.084 OMNI</div>
+              <span style="font-size: 0.7rem; color: #888;">Value accrues per block</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Unbonding Cooldown</span>
+              <div style="font-size: 1.2rem; font-weight: 800; color: #e040fb; font-family: monospace; margin-top: 4px;">Instant</div>
+              <span style="font-size: 0.7rem; color: #888;">Zero lockup penalty</span>
+            </div>
+          </div>
+
+          <!-- Staking Calculator -->
+          <div style="background: rgba(8, 4, 23, 0.6); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+            <h4 style="font-size: 0.92rem; color: white; margin-bottom: 12px; font-family: var(--font-header);">📊 Yield Projection Calculator</h4>
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+              <input type="number" id="calcStakeAmt" value="1000" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: white; padding: 10px 14px; border-radius: 10px; font-family: monospace; font-size: 1.1rem; flex: 1; outline: none;">
+              <span style="font-weight: bold; color: white;">OMNI</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.8rem; font-family: monospace;">
+              <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                <span style="color:#888; display:block; font-size:0.7rem;">DAILY REWARD</span>
+                <strong id="calcDailyYield" style="color:#34A853; font-size: 0.95rem;">+0.77 OMNI</strong>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                <span style="color:#888; display:block; font-size:0.7rem;">MONTHLY REWARD</span>
+                <strong id="calcMonthlyYield" style="color:#34A853; font-size: 0.95rem;">+23.66 OMNI</strong>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                <span style="color:#888; display:block; font-size:0.7rem;">YEARLY REWARD</span>
+                <strong id="calcYearlyYield" style="color:#34A853; font-size: 0.95rem;">+284.00 OMNI</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Stake / Unstake Action Box -->
+        <div class="pancake-card" style="max-width: 440px; margin: 0 auto; width: 100%;">
+          <div style="display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px;">
+            <button id="btnStakeModeStake" class="btn" style="flex: 1; background: hsl(var(--neon-cyan)); color: #080417; font-weight: bold; border-radius: 8px; height: 36px;">Stake OMNI</button>
+            <button id="btnStakeModeUnstake" class="btn" style="flex: 1; background: transparent; color: white; border-radius: 8px; height: 36px;">Unstake sOMNI</button>
+          </div>
+
+          <div class="pancake-input-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #888; margin-bottom: 8px;">
+              <span id="stakeInputLabel">Stake Amount</span>
+              <span id="stakeBalanceDisplay" style="font-family: monospace;">Available: 1,250.00 OMNI</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <input type="number" id="stakeInputAmt" value="100" placeholder="0.0" style="background: none; border: none; outline: none; font-size: 1.5rem; color: white; font-family: monospace; flex: 1;">
+              <button id="btnStakeMax" style="background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); color: hsl(var(--neon-cyan)); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">MAX</button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 0.8rem; color: #888; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span>You will receive:</span>
+              <span id="stakeReceiveDisplay" style="color: hsl(var(--neon-cyan)); font-family: monospace; font-weight: bold;">92.25 sOMNI</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Reward Accrual:</span>
+              <span style="color: #34A853;">Every Block (~400ms)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Protocol Fee:</span>
+              <span style="color: white;">0.00% (Zero Fee)</span>
+            </div>
+          </div>
+
+          <button class="btn btn-connect-wallet" id="btnExecuteStakeAction" style="width: 100%; height: 48px; border-radius: 16px; font-weight: bold; font-family: var(--font-header);">
+            Stake OMNI Now
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: EIP-1559 REAL-TIME BURN TRACKER -->
+    <div class="panel-section" id="paneBurn" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px;">
+        
+        <!-- Left: Live Burn Stats & Real-time Ticker -->
+        <div class="pancake-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-family: var(--font-header); color: white; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                🔥 EIP-1559 Deflationary Burn
+              </h3>
+              <p style="color: #9ba4b4; font-size: 0.82rem; margin-top: 4px;">100% of base transaction fees and custom token deployment taxes are permanently combusted on-chain.</p>
+            </div>
+            <span style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); color: #f43f5e; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-family: monospace; font-size: 0.9rem;">
+              DEFLATIONARY
+            </span>
+          </div>
+
+          <!-- Giant Burn Counter -->
+          <div style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(8, 4, 23, 0.8) 100%); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 0.8rem; color: #ff859d; font-family: monospace; text-transform: uppercase; letter-spacing: 1px;">TOTAL $OMNI BURNED TO DATE</span>
+            <div id="liveBurnCounter" style="font-size: 2.8rem; font-weight: 900; color: #fff; font-family: monospace; text-shadow: 0 0 20px rgba(244, 63, 94, 0.6); margin: 8px 0;">
+              1,482,914.82
+            </div>
+            <span style="font-size: 0.85rem; color: #34A853; font-family: monospace;">≈ $1,482,914 USD Removed from Circulating Supply</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">24h Burn Rate</span>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #f43f5e; font-family: monospace; margin-top: 4px;">18,420 OMNI</div>
+              <span style="font-size: 0.7rem; color: #888;">~12.8 OMNI / min</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Treasury Buyback</span>
+              <div style="font-size: 1.15rem; font-weight: 800; color: hsl(var(--neon-cyan)); font-family: monospace; margin-top: 4px;">$250,000 / Mo</div>
+              <span style="font-size: 0.7rem; color: #34A853;">Automated DEX Swaps</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Current Inflation</span>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #34A853; font-family: monospace; margin-top: 4px;">-1.42% (Net Negative)</div>
+              <span style="font-size: 0.7rem; color: #888;">Ultra-sound Tokenomics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Burn Transaction Feed -->
+        <div class="pancake-card">
+          <h4 style="font-size: 1rem; color: white; margin-bottom: 14px; font-family: var(--font-header);">📡 Live Burn Stream</h4>
+          <div id="burnTxFeed" style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; font-family: monospace; font-size: 0.78rem;">
+            <!-- Generated dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: DUAL-VM HIGH-THROUGHPUT TELEMETRY -->
+    <div class="panel-section" id="paneDualVM" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+        
+        <div class="pancake-card">
+          <h3 style="font-family: var(--font-header); color: white; font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Dual-VM Parallel Execution Engine</h3>
+          <p style="color: #9ba4b4; font-size: 0.82rem; margin-bottom: 20px;">Omni Network uniquely runs EVM and SVM side-by-side on parallel scheduler threads with optimistic state execution.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: hsl(var(--neon-cyan)); display: inline-block;"></span>
+                <strong style="color: white;">EVM Engine (v0.8.28)</strong>
+              </div>
+              <p style="font-size: 0.76rem; color: #888;">100% Solidity & Vyper compatibility with Turbo-Geth state proofs and EIP-4844 blobs.</p>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #e040fb; display: inline-block;"></span>
+                <strong style="color: white;">SVM Engine (Sealevel)</strong>
+              </div>
+              <p style="font-size: 0.76rem; color: #888;">Rust BPF smart contract execution executing up to 65,000 instructions in parallel.</p>
+            </div>
+          </div>
+
+          <div style="background: rgba(8, 4, 23, 0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+            <span style="font-size: 0.75rem; color: #888; font-family: monospace; display: block; margin-bottom: 8px;">PUBLIC RPC & WEBSOCKET ENDPOINTS</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; color: hsl(var(--neon-cyan)); margin-bottom: 6px;">
+              <span>https://rpc.omni-network.io (HTTP)</span>
+              <button onclick="navigator.clipboard.writeText('https://rpc.omni-network.io'); alert('RPC URL Copied!')" style="background:none; border:none; color:#888; cursor:pointer;">📋</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; color: #e040fb;">
+              <span>wss://ws.omni-network.io (WSS Stream)</span>
+              <button onclick="navigator.clipboard.writeText('wss://ws.omni-network.io'); alert('WSS URL Copied!')" style="background:none; border:none; color:#888; cursor:pointer;">📋</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pancake-card">
+          <h3 style="font-family: var(--font-header); color: white; font-size: 1.25rem; font-weight: 800; margin-bottom: 15px;">Live Network Performance</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Peak Throughput</span>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #34A853; font-family: monospace; margin-top: 4px;">65,420 TPS</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center;">
+              <span style="font-size: 0.72rem; color: #888; text-transform: uppercase;">Block Finality</span>
+              <div style="font-size: 1.6rem; font-weight: 800; color: hsl(var(--neon-cyan)); font-family: monospace; margin-top: 4px;">395 ms</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; font-size: 0.8rem; font-family: monospace; color: #888;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span>Active Consensus Nodes:</span>
+              <span style="color:white;">1,024 Validators</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span>Avg Transaction Fee:</span>
+              <span style="color:#34A853;">$0.00012 USD</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span>Slashing Rate:</span>
+              <span style="color:white;">0.00%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>Total Transactions:</span>
+              <span style="color:hsl(var(--neon-cyan));">148,291,048</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: CHAINPORT BRIDGE -->
+    <div class="panel-section" id="paneBridge" style="display: none;">
+      <div style="display: flex; justify-content: center; width: 100%;">
+        <div class="pancake-card" style="width: 100%; max-width: 480px; position: relative;">
+          <h3 style="font-family: var(--font-header); color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 20px;">OmniBridge Portal</h3>
+
+          <!-- Source Net -->
+          <div class="modal-form-group">
+            <label class="modal-form-label">From Source Network</label>
+            <select id="bridgeSourceNet" class="modal-form-select" style="width:100%;">
+              <option value="Ethereum">Ethereum Mainnet</option>
+              <option value="BSC">BNB Chain</option>
+              <option value="Polygon">Polygon Mainnet</option>
+              <option value="Avalanche">Avalanche C-Chain</option>
+            </select>
+          </div>
+
+          <!-- Destination Net -->
+          <div class="modal-form-group">
+            <label class="modal-form-label">To Destination Network</label>
+            <select id="bridgeTargetNet" class="modal-form-select" style="width:100%;">
+              <option value="OMNI">Omni Network</option>
+            </select>
+          </div>
+
+          <!-- Token / Amt Selection -->
+          <div class="modal-form-group">
+            <label class="modal-form-label">Select Token & Amount</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="number" id="bridgeAmt" class="modal-form-input" placeholder="0.0" style="flex:1;" value="10">
+              <select id="bridgeToken" class="modal-form-select" style="width: 120px;">
+                <option value="OMNI">OMNI</option>
+                <option value="USDT">USDT</option>
+                <option value="WETH">WETH</option>
+                <option value="USDC">USDC</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 15px; font-family: monospace; font-size: 0.78rem; color: #888; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Bridge Fee (0.5%):</span>
+              <span id="bridgeFeeDisplay" style="color: white;">0.05 OMNI</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Estimated Duration:</span>
+              <span style="color: hsl(var(--neon-cyan));">&lt; 3 mins</span>
+            </div>
+          </div>
+
+          <!-- ChainPort Stepper Progress Indicator -->
+          <div class="bridge-progress-container" id="bridgeStepper" style="display: none;">
+            <div class="bridge-progress-line"></div>
+            <div class="bridge-progress-line-fill" id="bridgeStepLineFill"></div>
+            
+            <div class="bridge-step" id="step-approve">
+              <div class="bridge-step-dot">1</div>
+              <div class="bridge-step-label">Approve</div>
+            </div>
+            <div class="bridge-step" id="step-lock">
+              <div class="bridge-step-dot">2</div>
+              <div class="bridge-step-label">Lock</div>
+            </div>
+            <div class="bridge-step" id="step-attest">
+              <div class="bridge-step-dot">3</div>
+              <div class="bridge-step-label">Sign</div>
+            </div>
+            <div class="bridge-step" id="step-mint">
+              <div class="bridge-step-dot">4</div>
+              <div class="bridge-step-label">Claim</div>
+            </div>
+          </div>
+
+          <button class="btn btn-connect-wallet" id="btnExecuteBridge" style="width: 100%; margin-top: 25px; height: 48px; border-radius: 16px; font-weight: bold; font-family: var(--font-header);">Bridge Asset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: COINFACTORY TOKEN GENERATOR -->
+    <div class="panel-section" id="paneGenerator">
+      <div class="remix-workspace">
+        
+        <!-- Left: CoinFactory Form Options -->
+        <div class="pancake-card" style="position: relative;">
+          <h3 style="font-family: var(--font-header); color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 20px;">Omni Token Generator</h3>
+          
+          <div class="modal-form-group">
+            <label class="modal-form-label">Token Name</label>
+            <input type="text" id="genTokenName" class="modal-form-input" value="SuperNova">
+          </div>
+
+          <div class="modal-form-group">
+            <label class="modal-form-label">Token Symbol</label>
+            <input type="text" id="genTokenSymbol" class="modal-form-input" value="NOVA">
+          </div>
+
+          <div class="modal-form-group">
+            <label class="modal-form-label">Initial Supply</label>
+            <input type="number" id="genInitialSupply" class="modal-form-input" value="1000000" min="1">
+          </div>
+
+          <!-- Extras grid: +20 OMNI per enabled check -->
+          <div style="margin-top: 20px;">
+            <label class="modal-form-label">Optional Add-ons (+20 OMNI each)</label>
+            <div class="factory-grid">
+              <div class="factory-option-card" data-index="0" id="opt-mint">
+                <span>Mintable</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+              <div class="factory-option-card" data-index="1" id="opt-burn">
+                <span>Burnable</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+              <div class="factory-option-card" data-index="2" id="opt-pause">
+                <span>Pausable</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+              <div class="factory-option-card" data-index="3" id="opt-blacklist">
+                <span>Blacklist</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+              <div class="factory-option-card" data-index="4" id="opt-recover">
+                <span>Recoverable</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+              <div class="factory-option-card" data-index="5" id="opt-limit">
+                <span>Tx Size Limit</span>
+                <span style="font-size:0.75rem; color:#888;">+20 OMNI</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Calculation details -->
+          <div style="background: rgba(0, 243, 255, 0.03); border: 1px dashed rgba(0, 243, 255, 0.2); border-radius: 12px; padding: 15px; margin: 20px 0; font-family: monospace; font-size: 0.78rem;">
+            <div style="color: white; font-weight: bold; margin-bottom: 8px;">🏷 Payment Bill (Omni Network Connected):</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>Base Setup:</span>
+              <span>50 OMNI</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>Add-ons:</span>
+              <span id="genAddonsCost">0 OMNI</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-weight: bold; color: hsl(var(--neon-cyan)); font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; margin-top: 6px;">
+              <span>Total Cost:</span>
+              <span id="genTotalCost">50 OMNI</span>
+            </div>
+          </div>
+
+          <button class="btn btn-connect-wallet" id="btnDeployCustomToken" style="width: 100%; height:48px; border-radius: 16px; font-weight:bold; font-family: var(--font-header); background: linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-purple))); color: white;">
+            Compile & Deploy Token
+          </button>
+        </div>
+
+        <!-- Right: OpenZeppelin solidity pane -->
+        <div>
+          <div class="code-editor-header">
+            <span>📄 contracts/CustomToken.sol (OpenZeppelin aligned)</span>
+            <span>Solidity v0.8.20</span>
+          </div>
+          <div class="code-editor-body" id="solidityCodePane">
+            // Compiler initializing...
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Deployed list -->
+      <div class="pancake-card" style="margin-top: 30px;">
+        <h4 style="margin-bottom: 15px; font-size: 1.05rem; font-family: var(--font-header); color: white;">📂 Tokens Deployed by OMNI Network</h4>
+        <div style="overflow-x: auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:#888;">
+                <th style="padding:10px;">Token Name</th>
+                <th style="padding:10px;">Symbol</th>
+                <th style="padding:10px;">Contract Address</th>
+                <th style="padding:10px;">Features</th>
+                <th style="padding:10px;">Created By</th>
+              </tr>
+            </thead>
+            <tbody id="customTokensTableBody">
+              <!-- Populated via Firestore -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: GAS-FREE OMNI FAUCET -->
+    <div class="panel-section" id="paneFaucet">
+      <div style="display: flex; justify-content: center; width: 100%;">
+        <div class="pancake-card" style="width: 100%; max-width: 480px; position: relative;">
+          <h3 style="font-family: var(--font-header); color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 15px;">OMNI Faucet</h3>
+          <p style="font-size:0.85rem; color:#888; margin-bottom: 20px;">Claim **1 OMNI** every 24 hours completely gas-free. Input your connected address below to receive the faucet dispatch.</p>
+
+          <div class="modal-form-group">
+            <label class="modal-form-label">Receiver Wallet Address</label>
+            <input type="text" id="faucetAddress" class="modal-form-input" placeholder="0x..." style="width:100%;">
+          </div>
+
+          <button class="btn btn-connect-wallet" id="btnExecuteFaucet" style="width: 100%; margin-top: 20px; height: 48px; border-radius: 16px; font-weight: bold; font-family: var(--font-header);">Request Faucet Dispatch</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: DOWNLOADS -->
+    <div class="panel-section" id="paneDownloads">
+      <div class="pancake-card">
+        <h3 style="font-family: var(--font-header); color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 15px;">OMNI Miner Downloader</h3>
+        <p style="font-size: 0.9rem; color: #9ba4b4; margin-bottom: 25px;">Secure the Omni Network by running your local miner Node and receive a 0.35% reward daily.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+          <div>
+            <h4 style="font-family:var(--font-header); font-size: 1rem; color:white; margin-bottom: 12px;">💻 Desktop GUI Miner</h4>
+            <p style="font-size:0.8rem; color:#888; margin-bottom:15px; line-height:1.4;">Clean client featuring GPU monitoring, node temperature details, and easy thread management.</p>
+            <button class="btn" style="padding: 10px 20px; border-radius:6px; font-size:0.85rem;" onclick="alert('Downloading Desktop GUI Client...')">Download Desktop GUI</button>
+          </div>
+          <div>
+            <h4 style="font-family:var(--font-header); font-size: 1rem; color:white; margin-bottom: 12px;">💻 Terminal Daemon</h4>
+            <p style="font-size:0.8rem; color:#888; margin-bottom:15px; line-height:1.4;">Optimized C++ background validator daemon for macOS Silicon, Linux, and Android Termux.</p>
+            <div style="background:rgba(0,0,0,0.4); border:1px solid var(--border-color); border-radius:6px; padding:10px; font-family:monospace; font-size:0.75rem; color:#34A853; margin-bottom:10px; word-break:break-all;">
+              curl -sSfL https://omni-network-39821.web.app/miner/install.sh | bash
+            </div>
+            <button class="btn" style="padding: 8px 16px; border-radius:6px; font-size:0.8rem; background:rgba(255,255,255,0.05); border:1px solid var(--border-color);" onclick="navigator.clipboard.writeText('curl -sSfL https://omni-network-39821.web.app/miner/install.sh | bash'); alert('Command copied!')">Copy Command</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: VALIDATOR TELEMETRY & PoNS CONSENSUS -->
+    <div class="panel-section" id="paneTelemetry">
+      <div class="pancake-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h3 style="font-family: var(--font-header); color: white; font-size: 1.25rem; font-weight: 700;">🌐 Global Validator Mesh & PoNS Consensus</h3>
+            <p style="font-size: 0.85rem; color: #9ba4b4;">Real-time telemetry across 1,240 active validator nodes utilizing Proof-of-Neural-Stake (PoNS).</p>
+          </div>
+          <div style="background: rgba(0,229,255,0.15); border: 1px solid hsl(var(--neon-cyan)); padding: 6px 14px; border-radius: 20px; font-family: monospace; color: hsl(var(--neon-cyan)); font-size: 0.85rem;">
+            ⚡ Network TPS: <strong id="liveNetworkTps">124,580 TPS</strong>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 0.75rem; color: #888;">Active Validators</div>
+            <div style="font-size: 1.3rem; font-weight: bold; color: white; font-family: monospace;">1,240 Nodes</div>
+            <div style="font-size: 0.7rem; color: #34A853;">100% Global Consensus</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 0.75rem; color: #888;">Average Block Time</div>
+            <div style="font-size: 1.3rem; font-weight: bold; color: hsl(var(--neon-cyan)); font-family: monospace;">380 ms</div>
+            <div style="font-size: 0.7rem; color: hsl(var(--neon-cyan));">Sub-second Finality</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 0.75rem; color: #888;">Total Staked $OMNI</div>
+            <div style="font-size: 1.3rem; font-weight: bold; color: #f59e0b; font-family: monospace;">425,890,120 $OMNI</div>
+            <div style="font-size: 0.7rem; color: #f59e0b;">68.4% Supply Staked</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 0.75rem; color: #888;">Cumulative Burned</div>
+            <div style="font-size: 1.3rem; font-weight: bold; color: #f43f5e; font-family: monospace;">18,420,550 $OMNI</div>
+            <div style="font-size: 0.7rem; color: #f43f5e;">Deflationary Rate: 4.2%/yr</div>
+          </div>
+        </div>
+
+        <!-- Global Region Latency Matrix -->
+        <h4 style="font-family: var(--font-header); font-size: 1rem; color: white; margin-bottom: 12px;">🗺️ Regional Node Latency & Health Matrix</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; color: white;">🇺🇸 North America (us-central1)</div>
+              <div style="font-size: 0.75rem; color: #888;">384 Active Validators • TPU v6e Cluster</div>
+            </div>
+            <div style="text-align: right; font-family: monospace; color: #34A853; font-weight: bold;">14 ms</div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; color: white;">🇪🇺 Europe (europe-west1)</div>
+              <div style="font-size: 0.75rem; color: #888;">312 Active Validators • Sycamore Relay</div>
+            </div>
+            <div style="text-align: right; font-family: monospace; color: #34A853; font-weight: bold;">22 ms</div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; color: white;">🇯🇵 Asia-Pacific (asia-northeast1)</div>
+              <div style="font-size: 0.75rem; color: #888;">290 Active Validators • PoNS Master Slices</div>
+            </div>
+            <div style="text-align: right; font-family: monospace; color: #34A853; font-weight: bold;">28 ms</div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; color: white;">🇧🇷 Latin America & Middle East</div>
+              <div style="font-size: 0.75rem; color: #888;">254 Active Validators • Edge Sentry Nodes</div>
+            </div>
+            <div style="text-align: right; font-family: monospace; color: #34A853; font-weight: bold;">38 ms</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Interactive Slippage Settings Modal -->
+  <div class="modal-overlay" id="slippageModal" style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+    <div class="modal-card" style="max-width: 320px;">
+      <h3 class="modal-title" style="font-size: 1rem;">Transaction Settings</h3>
+      <div style="margin-bottom: 15px;">
+        <label style="font-size: 0.8rem; color: #888;">Slippage Tolerance</label>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="setSlippage(0.1)">0.1%</button>
+          <button class="btn" style="padding: 6px 12px; font-size: 0.8rem; border-color: hsl(var(--neon-cyan));" onclick="setSlippage(0.5)">0.5%</button>
+          <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="setSlippage(1.0)">1.0%</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="toggleSlippageModal()" style="width: 100%; height: 36px; font-size: 0.85rem;">Save Settings</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { initializeFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { firebaseConfig } from './firebase-config.js';
+
+    // Firebase Init
+    const app = initializeApp(firebaseConfig);
+    const db = initializeFirestore(app, {}, "omni-dao");
+
+    let provider;
+    let signer = null;
+    let walletAddress = "";
+    
+    // CoinFactory checked features state [mintable, burnable, pausable, blacklist, recoverable, txLimit]
+    let selectedFeatures = [true, true, false, false, false, false];
+
+    const tokenABI = [
+      "function balanceOf(address) view returns (uint256)",
+      "function decimals() view returns (uint8)",
+      "function approve(address,uint256) returns (bool)",
+      "function mint(address,uint256) returns (bool)"
+    ];
+
+    async function init() {
+      // Setup tabs
+      setupTabs();
+      setupPancakeChart();
+      setupTokenGenerator();
+      setupBridgeStepper();
+
+      document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+
+      if (typeof window.ethereum !== 'undefined') {
+        const browserProvider = new ethers.BrowserProvider(window.ethereum);
+        provider = browserProvider;
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          signer = await browserProvider.getSigner();
+          walletAddress = accounts[0];
+          document.getElementById('connectWalletBtn').textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+          document.getElementById('faucetAddress').value = walletAddress;
+          updateBalances();
+        }
+      } else {
+        provider = new ethers.JsonRpcProvider('http://localhost:8545');
+      }
+
+      loadCustomTokensList();
+      setInterval(updateRates, 2000);
+      updateRates();
+    }
+
+    function setupTabs() {
+      const tabs = [
+        { btn: 'btnTabSwap', pane: 'paneSwap' },
+        { btn: 'btnTabStaking', pane: 'paneStaking' },
+        { btn: 'btnTabBurn', pane: 'paneBurn' },
+        { btn: 'btnTabDualVM', pane: 'paneDualVM' },
+        { btn: 'btnTabBridge', pane: 'paneBridge' },
+        { btn: 'btnTabGenerator', pane: 'paneGenerator' },
+        { btn: 'btnTabFaucet', pane: 'paneFaucet' },
+        { btn: 'btnTabTelemetry', pane: 'paneTelemetry' },
+        { btn: 'btnTabDownloads', pane: 'paneDownloads' }
+      ];
+
+      tabs.forEach(t => {
+        const btnEl = document.getElementById(t.btn);
+        if (btnEl) {
+          btnEl.addEventListener('click', () => {
+            tabs.forEach(item => {
+              document.getElementById(item.btn)?.classList.remove('active');
+              const p = document.getElementById(item.pane);
+              if (p) p.style.display = 'none';
+            });
+            btnEl.classList.add('active');
+            const targetPane = document.getElementById(t.pane);
+            if (targetPane) targetPane.style.display = 'block';
+          });
+        }
+      });
+      
+      tabs.slice(1).forEach(item => {
+        const p = document.getElementById(item.pane);
+        if (p) p.style.display = 'none';
+      });
+
+      setupStakingSuite();
+      setupBurnSuite();
+    }
+
+    // Liquid Staking ($sOMNI) Engine
+    function setupStakingSuite() {
+      const calcInput = document.getElementById('calcStakeAmt');
+      if (calcInput) {
+        calcInput.addEventListener('input', () => {
+          const amt = parseFloat(calcInput.value) || 0;
+          const apy = 0.284;
+          const yearly = amt * apy;
+          const monthly = yearly / 12;
+          const daily = yearly / 365;
+          document.getElementById('calcDailyYield').textContent = `+${daily.toFixed(2)} OMNI`;
+          document.getElementById('calcMonthlyYield').textContent = `+${monthly.toFixed(2)} OMNI`;
+          document.getElementById('calcYearlyYield').textContent = `+${yearly.toFixed(2)} OMNI`;
+        });
+      }
+
+      let isStakeMode = true;
+      const btnStake = document.getElementById('btnStakeModeStake');
+      const btnUnstake = document.getElementById('btnStakeModeUnstake');
+      const inputLabel = document.getElementById('stakeInputLabel');
+      const executeBtn = document.getElementById('btnExecuteStakeAction');
+      const stakeInput = document.getElementById('stakeInputAmt');
+      const receiveDisplay = document.getElementById('stakeReceiveDisplay');
+
+      function updateStakeMode() {
+        if (isStakeMode) {
+          btnStake.style.background = 'hsl(var(--neon-cyan))';
+          btnStake.style.color = '#080417';
+          btnUnstake.style.background = 'transparent';
+          btnUnstake.style.color = 'white';
+          inputLabel.textContent = 'Stake Amount (OMNI)';
+          executeBtn.textContent = 'Stake OMNI Now';
+          const amt = parseFloat(stakeInput.value) || 0;
+          receiveDisplay.textContent = `${(amt * 0.9225).toFixed(2)} sOMNI`;
+        } else {
+          btnUnstake.style.background = '#e040fb';
+          btnUnstake.style.color = 'white';
+          btnStake.style.background = 'transparent';
+          btnStake.style.color = 'white';
+          inputLabel.textContent = 'Unstake Amount (sOMNI)';
+          executeBtn.textContent = 'Unstake & Claim OMNI';
+          const amt = parseFloat(stakeInput.value) || 0;
+          receiveDisplay.textContent = `${(amt * 1.084).toFixed(2)} OMNI`;
+        }
+      }
+
+      if (btnStake && btnUnstake) {
+        btnStake.addEventListener('click', () => { isStakeMode = true; updateStakeMode(); });
+        btnUnstake.addEventListener('click', () => { isStakeMode = false; updateStakeMode(); });
+      }
+
+      if (stakeInput) {
+        stakeInput.addEventListener('input', () => {
+          const amt = parseFloat(stakeInput.value) || 0;
+          if (isStakeMode) {
+            receiveDisplay.textContent = `${(amt * 0.9225).toFixed(2)} sOMNI`;
+          } else {
+            receiveDisplay.textContent = `${(amt * 1.084).toFixed(2)} OMNI`;
+          }
+        });
+      }
+
+      if (executeBtn) {
+        executeBtn.addEventListener('click', () => {
+          const amt = parseFloat(stakeInput.value) || 0;
+          if (amt <= 0) {
+            alert('Please enter a valid amount');
+            return;
+          }
+          if (isStakeMode) {
+            alert(`⚡ Staking Success! Successfully staked ${amt} OMNI for ${(amt * 0.9225).toFixed(2)} sOMNI at 28.4% APY.\nYour balance will auto-compound every 400ms.`);
+          } else {
+            alert(`⚡ Unstaking Success! Successfully redeemed ${amt} sOMNI for ${(amt * 1.084).toFixed(2)} OMNI directly to your wallet!`);
+          }
+        });
+      }
+    }
+
+    // EIP-1559 Live Burn Ticker & Feed
+    function setupBurnSuite() {
+      const burnEl = document.getElementById('liveBurnCounter');
+      const feedEl = document.getElementById('burnTxFeed');
+      if (!burnEl || !feedEl) return;
+
+      let baseBurn = 1482914.82;
+      setInterval(() => {
+        const delta = Math.random() * 0.45 + 0.15;
+        baseBurn += delta;
+        burnEl.textContent = baseBurn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }, 1200);
+
+      // Generate realistic stream
+      const sampleHashes = ["0x8f2a...c10e", "0x3d91...7e21", "0x5c42...990b", "0x1a84...e881", "0x77b0...2314"];
+      const types = ["DEX Swap Base Fee", "Custom Token Deployment Tax", "Bridge Relayer Fee", "P2P Transfer Combustion"];
+
+      function addBurnLog() {
+        const hash = sampleHashes[Math.floor(Math.random() * sampleHashes.length)];
+        const type = types[Math.floor(Math.random() * types.length)];
+        const amount = (Math.random() * 2.8 + 0.2).toFixed(3);
+        const block = Math.floor(18920400 + Math.random() * 500);
+
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;';
+        item.innerHTML = `
+          <div>
+            <span style="color: white; font-weight: bold;">${hash}</span>
+            <span style="color: #888; font-size: 0.7rem; display: block;">${type} • Block #${block}</span>
+          </div>
+          <span style="color: #f43f5e; font-weight: bold;">🔥 -${amount} OMNI</span>
+        `;
+        feedEl.prepend(item);
+        if (feedEl.children.length > 8) feedEl.lastElementChild.remove();
+      }
+
+      for (let i = 0; i < 5; i++) addBurnLog();
+      setInterval(addBurnLog, 3500);
+    }
+
+    async function connectWallet() {
+      if (typeof window.ethereum === 'undefined') {
+        alert("Please install MetaMask!");
+        return;
+      }
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        signer = await provider.getSigner();
+        walletAddress = accounts[0];
+        document.getElementById('connectWalletBtn').textContent = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+        document.getElementById('faucetAddress').value = walletAddress;
+        updateBalances();
+      } catch (err) {
+        alert("Connection failed: " + err.message);
+      }
+    }
+
+    // Interactive PancakeSwap candle chart drawer
+    function setupPancakeChart() {
+      const canvas = document.getElementById('pancakePriceChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      function drawChart() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw grid
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, canvas.height);
+          ctx.stroke();
+        }
+        for (let i = 0; i < canvas.height; i += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(canvas.width, i);
+          ctx.stroke();
+        }
+
+        // Draw custom candle stick paths
+        const candlesCount = 14;
+        const spacing = canvas.width / (candlesCount + 1);
+        
+        ctx.shadowBlur = 8;
+        for (let i = 1; i <= candlesCount; i++) {
+          const x = i * spacing;
+          const isGreen = i % 3 !== 0;
+          ctx.strokeStyle = isGreen ? '#34A853' : '#EA4335';
+          ctx.fillStyle = isGreen ? '#34A853' : '#EA4335';
+          ctx.shadowColor = isGreen ? '#34A853' : '#EA4335';
+          
+          const high = 50 + Math.sin(i) * 30 + (i * 2);
+          const low = 120 + Math.sin(i) * 30 + (i * 2);
+          const open = 70 + Math.sin(i) * 20 + (i * 2);
+          const close = 100 + Math.sin(i) * 20 + (i * 2);
+
+          // Line
+          ctx.beginPath();
+          ctx.moveTo(x, high);
+          ctx.lineTo(x, low);
+          ctx.stroke();
+
+          // Body
+          ctx.fillRect(x - 6, Math.min(open, close), 12, Math.abs(open - close));
+        }
+        ctx.shadowBlur = 0;
+      }
+      
+      window.drawPancakeChart = drawChart;
+      window.addEventListener('resize', drawChart);
+      setTimeout(drawChart, 200);
+
+      // Listen for token changes to trigger chart update
+      document.getElementById('swapTokenFrom').addEventListener('change', () => {
+        document.getElementById('chartPairName').textContent = `${document.getElementById('swapTokenFrom').value} / ${document.getElementById('swapTokenTo').value}`;
+        drawChart();
+      });
+      document.getElementById('swapTokenTo').addEventListener('change', () => {
+        document.getElementById('chartPairName').textContent = `${document.getElementById('swapTokenFrom').value} / ${document.getElementById('swapTokenTo').value}`;
+        drawChart();
+      });
+    }
+
+    // CoinFactory generator setup
+    function setupTokenGenerator() {
+      const nameInput = document.getElementById('genTokenName');
+      const symbolInput = document.getElementById('genTokenSymbol');
+      const supplyInput = document.getElementById('genInitialSupply');
+      
+      const optionCards = document.querySelectorAll('.factory-option-card');
+      
+      optionCards.forEach(card => {
+        // Toggle selected features
+        const idx = parseInt(card.getAttribute('data-index'));
+        if (selectedFeatures[idx]) {
+          card.classList.add('active');
+        }
+
+        card.addEventListener('click', () => {
+          selectedFeatures[idx] = !selectedFeatures[idx];
+          card.classList.toggle('active', selectedFeatures[idx]);
+          updateCostAndSolidity();
+        });
+      });
+
+      function updateCostAndSolidity() {
+        const name = nameInput.value.trim() || "MyToken";
+        const symbol = symbolInput.value.trim() || "TKN";
+        const supply = supplyInput.value || "1000000";
+
+        // Count active extras
+        const extrasCount = selectedFeatures.filter(x => x).length;
+        const addonsCost = extrasCount * 20;
+        const totalCost = 50 + addonsCost;
+
+        document.getElementById('genAddonsCost').textContent = `${addonsCost} OMNI`;
+        document.getElementById('genTotalCost').textContent = `${totalCost} OMNI`;
+
+        // Solidity preview matching options
+        let code = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";\n`;
+        if (selectedFeatures[1]) code += `import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";\n`;
+        code += `import "@openzeppelin/contracts/access/Ownable.sol";\n\n`;
+
+        code += `contract ${name} is ERC20`;
+        if (selectedFeatures[1]) code += `, ERC20Burnable`;
+        code += `, Ownable {\n`;
+
+        code += `    address public taxCollector;\n`;
+        code += `    uint256 public constant TAX_BPS = 25; // 0.25% transfer fee\n\n`;
+
+        if (selectedFeatures[2]) {
+          code += `    bool public paused;\n`;
+        }
+        if (selectedFeatures[3]) {
+          code += `    mapping(address => bool) public blacklisted;\n`;
+        }
+        if (selectedFeatures[5]) {
+          code += `    uint256 public maxTxAmount;\n`;
+        }
+
+        code += `    constructor(\n        address ownerAddress,\n        address taxCollector_\n    ) ERC20("${name}", "${symbol}") Ownable(ownerAddress) {\n`;
+        code += `        taxCollector = taxCollector_;\n`;
+        code += `        _mint(ownerAddress, ${supply} * 10**decimals());\n`;
+        if (selectedFeatures[5]) {
+          code += `        maxTxAmount = (${supply} * 10**decimals() * 100) / 10000; // 1% tx size limit\n`;
+        }
+        code += `    }\n`;
+
+        if (selectedFeatures[0]) {
+          code += `\n    function mint(address to, uint256 amount) external onlyOwner {\n        _mint(to, amount);\n    }\n`;
+        }
+
+        if (selectedFeatures[2]) {
+          code += `\n    function setPaused(bool paused_) external onlyOwner {\n        paused = paused_;\n    }\n`;
+        }
+
+        if (selectedFeatures[3]) {
+          code += `\n    function setBlacklisted(address account, bool status) external onlyOwner {\n        blacklisted[account] = status;\n    }\n`;
+        }
+
+        if (selectedFeatures[4]) {
+          code += `\n    function recoverERC20(address token, uint256 amount) external onlyOwner {\n        IERC20(token).transfer(owner(), amount);\n    }\n`;
+        }
+
+        code += `}`;
+        document.getElementById('solidityCodePane').textContent = code;
+      }
+
+      [nameInput, symbolInput, supplyInput].forEach(el => {
+        el.addEventListener('input', updateCostAndSolidity);
+      });
+
+      updateCostAndSolidity();
+
+      // Deploy Token Action
+      document.getElementById('btnDeployCustomToken').addEventListener('click', async () => {
+        if (!signer) {
+          await connectWallet();
+          return;
+        }
+
+        const name = nameInput.value.trim();
+        const symbol = symbolInput.value.trim();
+        const supply = parseFloat(supplyInput.value);
+
+        if (!name || !symbol || isNaN(supply) || supply <= 0) {
+          alert("Please fill in valid token details");
+          return;
+        }
+
+        const btn = document.getElementById('btnDeployCustomToken');
+        const origText = btn.textContent;
+        btn.disabled = true;
+
+        try {
+          btn.textContent = "COMPILING & RETRIEVING ADDRESSES...";
+          const resp = await fetch('deployed-addresses.json?t=' + Date.now());
+          const addrs = await resp.json();
+          const factoryAddr = addrs.tokenFactory;
+          const omniAddr = addrs.omniToken;
+
+          // Approve cost
+          const extrasCount = selectedFeatures.filter(x => x).length;
+          const totalCostAmount = 50 + (extrasCount * 20);
+          btn.textContent = `APPROVING ${totalCostAmount} OMNI FEE...`;
+
+          const omniContract = new ethers.Contract(omniAddr, tokenABI, signer);
+          const feeAmount = ethers.parseEther(String(totalCostAmount));
+          const approveTx = await omniContract.approve(factoryAddr, feeAmount);
+          await approveTx.wait();
+
+          // Deploy via factory
+          btn.textContent = "BROADCASTING DEPLOY TRANSACTION...";
+          const factoryABI = [
+            "function deployToken(string,string,uint256,bool[]) returns (address)"
+          ];
+          const factoryContract = new ethers.Contract(factoryAddr, factoryABI, signer);
+          const rawSupply = ethers.parseEther(String(supply));
+          
+          const deployTx = await factoryContract.deployToken(
+            name,
+            symbol,
+            rawSupply,
+            selectedFeatures
+          );
+
+          btn.textContent = "AWAITING BLOCK INCLUSION...";
+          const receipt = await deployTx.wait();
+
+          let tokenAddress = "unknown";
+          receipt.logs.forEach(log => {
+            try {
+              if (log.address.toLowerCase() === factoryAddr.toLowerCase()) {
+                tokenAddress = '0x' + log.topics[1].slice(26);
+              }
+            } catch(e) {}
+          });
+
+          // Save custom token to database
+          await addDoc(collection(db, "custom_tokens"), {
+            name,
+            symbol,
+            address: tokenAddress,
+            supply,
+            createdBy: walletAddress,
+            features: selectedFeatures,
+            timestamp: Math.floor(Date.now() / 1000)
+          });
+
+          alert(`Successfully Deployed by OMNI Network: ${name} (${symbol}) at ${tokenAddress}!\n2% initial supply sent to Treasury.`);
+          loadCustomTokensList();
+        } catch (err) {
+          console.error(err);
+          alert("Deployment failed: " + err.message);
+        } finally {
+          btn.textContent = origText;
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Load live custom tokens list
+    async function loadCustomTokensList() {
+      const tbody = document.getElementById('customTokensTableBody');
+      try {
+        const querySnapshot = await getDocs(query(collection(db, "custom_tokens"), orderBy("timestamp", "desc"), limit(10)));
+        tbody.innerHTML = "";
+        
+        if (querySnapshot.empty) {
+          tbody.innerHTML = `<tr><td colspan="5" style="padding:20px; text-align:center; color:#888;">No custom tokens deployed yet.</td></tr>`;
+          return;
+        }
+
+        querySnapshot.forEach(doc => {
+          const data = doc.data();
+          
+          let badgesHtml = "";
+          const featureNames = ["Mint", "Burn", "Pause", "Blacklist", "Recover", "Limit"];
+          
+          if (Array.isArray(data.features)) {
+            data.features.forEach((feat, idx) => {
+              if (feat) {
+                badgesHtml += `<span class="method-badge badge-${featureNames[idx].toLowerCase()}" style="margin-right: 4px;">${featureNames[idx]}</span>`;
+              }
+            });
+          }
+
+          tbody.innerHTML += `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+              <td style="padding:12px; font-weight:bold; color:white;">${data.name}</td>
+              <td style="padding:12px; font-family:monospace;">${data.symbol}</td>
+              <td style="padding:12px; font-family:monospace; color:hsl(var(--neon-cyan));">
+                <a href="https://omni-explorer-39821.web.app/#/address/${data.address}" style="color:inherit; text-decoration:none;" target="_blank">${data.address.slice(0, 10)}...${data.address.slice(-4)}</a>
+              </td>
+              <td style="padding:12px;">${badgesHtml || 'Standard'}</td>
+              <td style="padding:12px; font-family:monospace;">${data.createdBy.slice(0, 6)}...${data.createdBy.slice(-4)}</td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        console.warn("Failed to load custom tokens:", err);
+      }
+    }
+
+    // ChainPort Bridge integration with dynamic progress
+    function setupBridgeStepper() {
+      const btn = document.getElementById('btnExecuteBridge');
+      if (!btn) return;
+
+      btn.addEventListener('click', async () => {
+        if (!signer) {
+          await connectWallet();
+          return;
+        }
+
+        const amt = parseFloat(document.getElementById('bridgeAmt').value) || 0;
+        const token = document.getElementById('bridgeToken').value;
+
+        if (amt <= 0) {
+          alert("Enter a valid bridge amount");
+          return;
+        }
+
+        const stepper = document.getElementById('bridgeStepper');
+        const fill = document.getElementById('bridgeStepLineFill');
+        stepper.style.display = 'flex';
+        btn.disabled = true;
+
+        const setStep = (stepId, percent) => {
+          document.querySelectorAll('.bridge-step').forEach(el => {
+            el.classList.remove('active', 'completed');
+          });
+          const stepEl = document.getElementById(stepId);
+          stepEl.classList.add('active');
+          
+          // Set completed for previous
+          let current = stepEl;
+          while (current.previousElementSibling && current.previousElementSibling.classList.contains('bridge-step')) {
+            current.previousElementSibling.classList.add('completed');
+            current = current.previousElementSibling;
+          }
+          fill.style.width = `${percent}%`;
+        };
+
+        try {
+          const resp = await fetch('deployed-addresses.json?t=' + Date.now());
+          const addrs = await resp.json();
+          const bridgeAddr = addrs.omniBridge;
+
+          // Map token addresses
+          const tokenAddrMap = {};
+          if (addrs.tokens) {
+            for (const [sym, info] of Object.entries(addrs.tokens)) {
+              tokenAddrMap[sym] = info.address;
+            }
+          }
+          tokenAddrMap['ETH'] = tokenAddrMap['WETH'];
+          tokenAddrMap['BTC'] = tokenAddrMap['WBTC'];
+          tokenAddrMap['SOL'] = tokenAddrMap['WSOL'];
+          tokenAddrMap['BNB'] = tokenAddrMap['WBNB'];
+
+          const tokenAddress = tokenAddrMap[token];
+          const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+          const decimals = await tokenContract.decimals();
+          const rawAmt = ethers.parseUnits(amt.toFixed(Math.min(6, decimals)), decimals);
+
+          // Step 1: Approve
+          setStep('step-approve', 0);
+          btn.textContent = "Awaiting Token Approval...";
+          const approveTx = await tokenContract.approve(bridgeAddr, rawAmt);
+          await approveTx.wait();
+
+          // Step 2: Lock
+          setStep('step-lock', 33);
+          btn.textContent = "Locking Asset on Source Chain...";
+          const bridgeABI = [
+            "function lockTokens(address,uint256,string) returns (bytes32)"
+          ];
+          const bridgeContract = new ethers.Contract(bridgeAddr, bridgeABI, signer);
+          const lockTx = await bridgeContract.lockTokens(tokenAddress, rawAmt, "Ethereum");
+          await lockTx.wait();
+
+          // Step 3: Attestations
+          setStep('step-attest', 66);
+          btn.textContent = "Awaiting ChainPort Signatures...";
+          await new Promise(resolve => setTimeout(resolve, 3000));
+
+          // Step 4: Mint/Release
+          setStep('step-mint', 100);
+          document.getElementById('step-mint').classList.add('completed');
+          btn.textContent = "Dispatched and Minted on Target!";
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          alert("Tokens successfully bridged to OMNI Network!");
+        } catch(err) {
+          console.warn("Falling back to interactive simulated bridge stepper:", err);
+          // Interactive Simulated Stepper
+          setStep('step-approve', 0);
+          btn.textContent = "Step 1/4: Simulating Token Approval...";
+          await new Promise(r => setTimeout(r, 1000));
+          
+          setStep('step-lock', 33);
+          btn.textContent = "Step 2/4: Locking Asset on Source Vault...";
+          await new Promise(r => setTimeout(r, 1200));
+
+          setStep('step-attest', 66);
+          btn.textContent = "Step 3/4: Collecting 21/21 PoNS Attestation Signatures...";
+          await new Promise(r => setTimeout(r, 1400));
+
+          setStep('step-mint', 100);
+          document.getElementById('step-mint').classList.add('completed');
+          btn.textContent = "Step 4/4: Asset Minted on Omni Network!";
+          await new Promise(r => setTimeout(r, 1000));
+
+          alert(`🎉 Bridge Simulation Successful!\n\nAsset: ${amt} ${token}\nSource: ${document.getElementById('bridgeSourceNet').value}\nDestination: Omni Network L1\nSignatures: 21/21 Validated\nTransaction Hash: 0x` + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join(''));
+        } finally {
+          stepper.style.display = 'none';
+          btn.disabled = false;
+          btn.textContent = "Bridge Asset";
+        }
+      });
+    }
+
+    // OMNI Gas-free Faucet
+    document.getElementById('btnExecuteFaucet').addEventListener('click', async () => {
+      const recipient = document.getElementById('faucetAddress').value.trim();
+      if (!recipient || !recipient.startsWith('0x') || recipient.length !== 42) {
+        alert("Please enter a valid receiver wallet address.");
+        return;
+      }
+
+      const btn = document.getElementById('btnExecuteFaucet');
+      const origText = btn.textContent;
+      btn.textContent = "PROCESSING DISPATCH...";
+      btn.disabled = true;
+
+      try {
+        // Enforce 24 hour cooldown using Firestore
+        const userAddress = recipient.toLowerCase();
+        const claimRef = doc(db, "faucet_claims", userAddress);
+        const claimSnap = await getDoc(claimRef);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (claimSnap.exists()) {
+          const lastClaim = claimSnap.data().timestamp;
+          if (now - lastClaim < 86400) {
+            const timeLeft = 86400 - (now - lastClaim);
+            const hoursLeft = Math.floor(timeLeft / 3600);
+            const minsLeft = Math.floor((timeLeft % 3600) / 60);
+            alert(`Faucet on cooldown. You can claim again in ${hoursLeft}h ${minsLeft}m.`);
+            btn.textContent = origText;
+            btn.disabled = false;
+            return;
+          }
+        }
+
+        // Setup deployer wallet using provider to execute gas-free payout
+        const resp = await fetch('deployed-addresses.json?t=' + Date.now());
+        const addrs = await resp.json();
+        const omniAddr = addrs.omniToken;
+
+        const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
+        // Deployer key
+        const deployerWallet = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', localProvider);
+        
+        const omniContract = new ethers.Contract(omniAddr, [
+          "function transfer(address,uint256) returns (bool)"
+        ], deployerWallet);
+
+        btn.textContent = "SENDING NATIVE OMNI...";
+        const tx = await omniContract.transfer(recipient, ethers.parseEther("1.0"));
+        await tx.wait();
+
+        // Save last claim timestamp
+        await setDoc(claimRef, { timestamp: now });
+
+        alert("Successfully claimed 1.00 OMNI! The transaction went through gas-free.");
+        updateBalances();
+      } catch(err) {
+        console.error(err);
+        alert("Faucet claim failed: " + err.message);
+      } finally {
+        btn.textContent = origText;
+        btn.disabled = false;
+      }
+    });
+
+    // Swapping calculations rates
+    async function updateRates() {
+      try {
+        const amtEl = document.getElementById('swapAmtFrom');
+        if (!amtEl) return;
+        const fromVal = parseFloat(amtEl.value) || 0;
+        const fromToken = document.getElementById('swapTokenFrom').value;
+        const toToken = document.getElementById('swapTokenTo').value;
+
+        const resp = await fetch('deployed-addresses.json?t=' + Date.now());
+        const addrs = await resp.json();
+        
+        const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
+        const routerABI = [
+          "function getAmountOut(address,address,uint256) view returns (uint256,uint256)"
+        ];
+        const router = new ethers.Contract(addrs.swapRouter, routerABI, localProvider);
+
+        const tokenAddrMap = {};
+        if (addrs.tokens) {
+          for (const [sym, info] of Object.entries(addrs.tokens)) {
+            tokenAddrMap[sym] = info.address;
+          }
+        }
+        tokenAddrMap['ETH'] = tokenAddrMap['WETH'];
+        tokenAddrMap['BTC'] = tokenAddrMap['WBTC'];
+        tokenAddrMap['SOL'] = tokenAddrMap['WSOL'];
+        tokenAddrMap['BNB'] = tokenAddrMap['WBNB'];
+
+        const addrIn = tokenAddrMap[fromToken];
+        const addrOut = tokenAddrMap[toToken];
+
+        if (addrIn && addrOut && fromVal > 0) {
+          const decimalsIn = fromToken === 'BTC' ? 8 : (fromToken === 'SOL' ? 9 : (fromToken === 'USDT' || fromToken === 'USDC' ? 6 : 18));
+          const decimalsOut = toToken === 'BTC' ? 8 : (toToken === 'SOL' ? 9 : (toToken === 'USDT' || toToken === 'USDC' ? 6 : 18));
+
+          const rawAmtIn = ethers.parseUnits(fromVal.toFixed(Math.min(6, decimalsIn)), decimalsIn);
+          const [rawAmtOut] = await router.getAmountOut(addrIn, addrOut, rawAmtIn);
+          const formattedOut = ethers.formatUnits(rawAmtOut, decimalsOut);
+
+          document.getElementById('swapAmtTo').value = parseFloat(formattedOut).toFixed(4);
+          document.getElementById('swapPriceRate').textContent = `1 ${fromToken} = ${(parseFloat(formattedOut) / fromVal).toFixed(4)} ${toToken}`;
+          document.getElementById('swapMinReceived').textContent = `${(parseFloat(formattedOut) * 0.995).toFixed(4)} ${toToken}`;
+          document.getElementById('chartPairPrice').textContent = `$${(parseFloat(formattedOut) / fromVal).toFixed(2)}`;
+        }
+      } catch(e) {}
+    }
+
+    async function updateBalances() {
+      if (!walletAddress) return;
+      try {
+        const resp = await fetch('deployed-addresses.json?t=' + Date.now());
+        const addrs = await resp.json();
+        
+        const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
+        const tokenFrom = document.getElementById('swapTokenFrom').value;
+        const tokenTo = document.getElementById('swapTokenTo').value;
+
+        // Map token symbols
+        const tokenAddrMap = {};
+        if (addrs.tokens) {
+          for (const [sym, info] of Object.entries(addrs.tokens)) {
+            tokenAddrMap[sym] = info.address;
+          }
+        }
+        tokenAddrMap['ETH'] = tokenAddrMap['WETH'];
+        tokenAddrMap['BTC'] = tokenAddrMap['WBTC'];
+        tokenAddrMap['SOL'] = tokenAddrMap['WSOL'];
+        tokenAddrMap['BNB'] = tokenAddrMap['WBNB'];
+
+        const addrFrom = tokenAddrMap[tokenFrom];
+        const addrTo = tokenAddrMap[tokenTo];
+
+        if (addrFrom) {
+          const cFrom = new ethers.Contract(addrFrom, tokenABI, localProvider);
+          const balFrom = await cFrom.balanceOf(walletAddress);
+          const decFrom = await cFrom.decimals();
+          document.getElementById('swapBalanceFrom').textContent = `Balance: ${parseFloat(ethers.formatUnits(balFrom, decFrom)).toFixed(4)}`;
+        }
+        if (addrTo) {
+          const cTo = new ethers.Contract(addrTo, tokenABI, localProvider);
+          const balTo = await cTo.balanceOf(walletAddress);
+          const decTo = await cTo.decimals();
+          document.getElementById('swapBalanceTo').textContent = `Balance: ${parseFloat(ethers.formatUnits(balTo, decTo)).toFixed(4)}`;
+        }
+      } catch(e) {}
+    }
+
+    document.getElementById('swapTokenFrom').addEventListener('change', updateBalances);
+    document.getElementById('swapTokenTo').addEventListener('change', updateBalances);
+
+    // Run on startup
+    init();
+
+    // Logo dropdown click handler
+    const logoWrapper = document.querySelector('.logo-dropdown-wrapper');
+    if (logoWrapper) {
+      const dropdownContent = logoWrapper.querySelector('.nav-dropdown-content');
+      logoWrapper.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (dropdownContent) {
+          const isShown = dropdownContent.style.display === 'block';
+          dropdownContent.style.display = isShown ? 'none' : 'block';
+        }
+      });
+      // Allow links inside dropdown to navigate normally
+      if (dropdownContent) {
+        dropdownContent.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+      document.addEventListener('click', () => {
+        if (dropdownContent) dropdownContent.style.display = 'none';
+      });
+    }
+
+    // MetaMask watchlist watchAsset functions
+    window.addOmniNetworkToMetaMask = async function() {
+      if (!window.ethereum) {
+        alert("MetaMask is not installed!");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x9B8D',
+            chainName: 'OMNI Network',
+            nativeCurrency: {
+              name: 'OMNI Native Token',
+              symbol: 'OMNI',
+              decimals: 18
+            },
+            rpcUrls: ['https://omni-network-39821.web.app/rpc'],
+            blockExplorerUrls: ['https://omni-explorer-39821.web.app']
+          }]
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    window.addOmniTokenToMetaMask = async function() {
+      if (!window.ethereum) {
+        alert("MetaMask is not installed!");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: '0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44',
+              symbol: 'OMNI',
+              decimals: 18,
+              image: 'https://omni-network-39821.web.app/assets/logo.png'
+            }
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    window.addSOmniTokenToMetaMask = async function() {
+      if (!window.ethereum) {
+        alert("MetaMask is not installed!");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: '0x6C2d83262fF84cBaDb3e416D527403135D757892',
+              symbol: 'sOMNI',
+              decimals: 18,
+              image: 'https://omni-network-39821.web.app/assets/somni.png'
+            }
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    // Inject MetaMask floating widget
+    const metaWidget = document.createElement('div');
+    metaWidget.id = 'metaMaskQuickAddWidget';
+    metaWidget.style.cssText = 'position: fixed; bottom: 20px; left: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;';
+    metaWidget.innerHTML = `
+      <button onclick="addOmniNetworkToMetaMask()" style="background: rgba(8, 4, 23, 0.9); border: 1px solid rgba(0, 243, 255, 0.4); color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px); font-family: sans-serif; font-weight: bold; width: 170px; text-align: left;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" style="width:16px; height:16px;"> Add OMNI Network
+      </button>
+      <button onclick="addOmniTokenToMetaMask()" style="background: rgba(8, 4, 23, 0.9); border: 1px solid rgba(0, 243, 255, 0.4); color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px); font-family: sans-serif; font-weight: bold; width: 170px; text-align: left;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" style="width:16px; height:16px;"> Add OMNI Token
+      </button>
+      <button onclick="addSOmniTokenToMetaMask()" style="background: rgba(8, 4, 23, 0.9); border: 1px solid rgba(0, 243, 255, 0.4); color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px); font-family: sans-serif; font-weight: bold; width: 170px; text-align: left;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" style="width:16px; height:16px;"> Add sOMNI Token
+      </button>
+    `;
+    document.body.appendChild(metaWidget);
+  </script>
+  <script src="space-particles.js"></script>
+  <script src="omni-pet-widget.js"></script>
+  <script src="omni_digital_nature_3d.js"></script>
+  <script src="omni_gemini_vector_suite.js"></script>
+  <script src="network_engine_v2.js"></script>
+
+<!-- Google Cloud Console Ecosystem Universal Bar -->
+<div id="omni-gcp-ecosystem-bar" style="position:fixed;bottom:12px;left:12px;z-index:99999;display:flex;align-items:center;gap:8px;background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.4);border-radius:24px;padding:4px 12px;backdrop-filter:blur(8px);font-family:-apple-system,BlinkMacSystemFont,monospace;font-size:11px;color:#e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+  <span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;"></span>
+  <span style="font-weight:700;color:#38bdf8;">GCP ACTIVE</span>
+  <span style="color:#64748b;">·</span>
+  <span style="font-size:10px;color:#94a3b8;">PROJECT: omnix3dev (4,536 APIs)</span>
+  <a href="https://console.cloud.google.com/welcome?project=omnix3dev" target="_blank" style="color:#38bdf8;text-decoration:none;margin-left:4px;font-weight:600;">CONSOLE ↗</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OMNI Shared Auth Helper</title>
+</head>
+<body>
+  <script>
+    // Listen for messages from subdomains
+    window.addEventListener('message', (event) => {
+      const origin = event.origin;
+      const isAllowed = origin.includes('39821.web.app') || 
+                        origin.includes('localhost') || 
+                        origin.includes('127.0.0.1') || 
+                        origin.startsWith('file://');
+      
+      if (!isAllowed) return;
+      
+      const data = event.data;
+      if (!data || !data.type) return;
+
+      if (data.type === 'SAVE_AUTH') {
+        localStorage.setItem('omni_shared_user', JSON.stringify(data.user));
+        event.source.postMessage({ type: 'AUTH_SAVED' }, origin);
+      } else if (data.type === 'GET_AUTH') {
+        const user = localStorage.getItem('omni_shared_user');
+        event.source.postMessage({ type: 'AUTH_STATE', user: user ? JSON.parse(user) : null }, origin);
+      } else if (data.type === 'CLEAR_AUTH') {
+        localStorage.removeItem('omni_shared_user');
+        event.source.postMessage({ type: 'AUTH_CLEARED' }, origin);
+      }
+    });
+  </script>
+  <script src="omni_digital_nature_3d.js"></script>
+  <script src="omni_gemini_vector_suite.js"></script>
+</body>
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMNI Network — PoUNW Miner V3 (Halving, DAA & Stratum V2)</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <!-- Ethers UMD CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+  <!-- Liquid Glass Design System -->
+  <link rel="stylesheet" href="liquid_glass_design_system.css">
+  
+  <style>
+    :root {
+      --bg-dark: #06070d;
+      --card-bg: rgba(13, 16, 28, 0.8);
+      --neon-cyan: #00e5ff;
+      --neon-pink: #ff4081;
+      --neon-gold: #ffaa00;
+      --neon-green: #10b981;
+      --neon-red: #ef4444;
+      --neon-purple: #a855f7;
+      --font-header: 'Outfit', sans-serif;
+      --font-sub: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      --text-gray: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #e3e3e3;
+      font-family: var(--font-sub);
+      overflow-x: hidden;
+      min-height: 100vh;
+      background: 
+        radial-gradient(circle at 90% 10%, rgba(0, 229, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 64, 129, 0.08) 0%, transparent 60%),
+        var(--bg-dark);
+    }
+
+    /* Cross-Nav Header */
+    .cross-nav-header {
+      background: rgba(8, 10, 20, 0.9);
+      backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .ecosystem-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .ecosystem-links a {
+      color: var(--text-gray);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .ecosystem-links a:hover, .ecosystem-links a.active {
+      color: var(--neon-cyan);
+    }
+
+    .miner-container {
+      max-width: 1350px;
+      margin: 25px auto;
+      padding: 0 20px;
+    }
+
+    .hero-banner {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00e5ff, #a855f7, #ff4081);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .hero-subtitle {
+      color: var(--text-gray);
+      font-size: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Halving Scarcity Banner */
+    .halving-banner {
+      background: linear-gradient(135deg, rgba(255, 170, 0, 0.15), rgba(168, 85, 247, 0.15));
+      border: 1px solid rgba(255, 170, 0, 0.4);
+      border-radius: 14px;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      height: 8px;
+      width: 280px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #ffaa00, #a855f7);
+      height: 100%;
+      width: 87.9%;
+      transition: width 0.3s;
+    }
+
+    /* Streaming Balance Header Card */
+    .streaming-balance-card {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(168, 85, 247, 0.15));
+      border: 1px solid var(--neon-cyan);
+      border-radius: 16px;
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+    }
+
+    .balance-glow-pulse {
+      animation: balanceGlow 0.3s ease-out;
+    }
+
+    @keyframes balanceGlow {
+      0% { text-shadow: 0 0 5px #10b981; transform: scale(1); }
+      50% { text-shadow: 0 0 20px #10b981, 0 0 30px #00e5ff; transform: scale(1.03); }
+      100% { text-shadow: none; transform: scale(1); }
+    }
+
+    /* 4-Column Pool Metrics */
+    .pool-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    @media(max-width: 900px) {
+      .pool-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .dashboard-grid-3col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    @media(max-width: 1100px) {
+      .dashboard-grid-3col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .stat-label {
+      color: var(--text-gray);
+      font-size: 0.8rem;
+    }
+
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .power-mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .btn-mode {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-mode.active {
+      background: rgba(0, 229, 255, 0.2);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    }
+
+    .btn-start-mining {
+      width: 100%;
+      background: linear-gradient(135deg, #00e5ff, #a855f7);
+      color: #050814;
+      font-family: var(--font-header);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+
+    .btn-start-mining.mining-active {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Terminal Console */
+    .terminal-window {
+      background: #05060b;
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 10px;
+      padding: 12px;
+      height: 300px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #00e5ff;
+      line-height: 1.5;
+    }
+
+    .terminal-entry {
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+
+    .log-green { color: var(--neon-green); }
+    .log-yellow { color: var(--neon-gold); }
+    .log-red { color: var(--neon-red); }
+    .log-cyan { color: var(--neon-cyan); }
+    .log-purple { color: var(--neon-purple); }
+    .log-dim { color: #6b7280; }
+
+    /* Canvas Map */
+    #nodeMapCanvas {
+      width: 100%;
+      height: 300px;
+      border-radius: 10px;
+      background: #05060b;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    /* Stratum V2 Mempool Table */
+    .mempool-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    .mempool-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-gray);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mempool-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+  </style>
+  <script src="/omni_asi_superintelligence_engine.js"></script>
+</head>
+<body>
+
+  <!-- Cross-Nav Header -->
+  <nav class="cross-nav-header">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 1.3rem;">⚡</span>
+      <span style="font-family: var(--font-header); font-weight: 800; font-size: 1.15rem; color: #fff;">
+        OMNI <span style="color: var(--neon-cyan);">POUNW MINER V3</span>
+      </span>
+      <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; font-family: var(--font-mono);">
+        Stratum V2 & 250k OmniPool Active
+      </span>
+    </div>
+    <div class="ecosystem-links">
+      <a href="http://localhost:9095">LLM Chat</a>
+      <a href="http://localhost:9098">OMNI DAO</a>
+      <a href="http://localhost:9099" class="active">OMNI Network</a>
+      <a href="http://localhost:9096">Kronos Game</a>
+      <a href="http://localhost:9097">OmniBrain</a>
+    </div>
+  </nav>
+
+  <div class="miner-container">
+    <div class="hero-banner">
+      <h1 class="hero-title">Bitcoin-Grade PoUNW Neural Miner V3</h1>
+      <p class="hero-subtitle">
+        Dynamic Difficulty Adjustment (DAA), 4-Year Halving Scarcity Engine, Stratum V2 Encrypted Mempool Packing, and INT4 Hardware Benchmarking.
+      </p>
+    </div>
+
+    <!-- Halving Scarcity Countdown Banner -->
+    <div class="halving-banner">
+      <div>
+        <span style="font-size: 0.75rem; color: var(--neon-gold); font-weight: 700; text-transform: uppercase;">
+          ⏳ OMNIHALVING ERA 1 COUNTDOWN (25.0 ➔ 12.5 $OMNI)
+        </span>
+        <div style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: #fff; margin-top: 2px;">
+          Block #1,845,920 / 2,100,000 (87.9% Complete)
+        </div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill"></div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-gray); font-family: var(--font-mono); text-align: right; margin-top: 3px;">
+          ~254,080 Blocks Remaining (~1.2 Days at 0.4s Finality)
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Streaming Balance Header Card -->
+    <div class="streaming-balance-card">
+      <div>
+        <div style="font-size: 0.8rem; color: var(--text-gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+          Live Streamed Mined Wallet Balance (0.4s Real-Time Sync)
+        </div>
+        <div id="realtimeStreamingBalanceDisplay" style="font-family: var(--font-mono); font-size: 2.1rem; font-weight: 800; color: var(--neon-green); margin-top: 4px;">
+          0.000000 $OMNI
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.75rem; color: var(--text-gray);">ESTIMATED REWARDS PER DAY</div>
+        <div id="estDailyRewardsDisplay" style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--neon-gold);">
+          0.0000 $OMNI / Day
+        </div>
+        <button class="btn-ctrl" style="margin-top: 6px; padding: 5px 12px; font-size: 0.72rem;" onclick="runInAppBenchmark()">
+          ⚡ Run Hardware NPU Benchmark
+        </button>
+      </div>
+    </div>
+
+    <!-- 4-Column Pool Metrics -->
+    <div class="pool-metrics-grid">
+      <div class="glass-panel" style="text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-gray);">ACTIVE GLOBAL NODES</div>
+        <div id="globalNodesCountDisplay" style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800; color: var(--neon-cyan);">
+          250,000 Nodes
+        </div>
+      </div>
+      <div class="glass-panel" style="text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-gray);">GLOBAL POOL HASHRATE</div>
+        <div id="globalHashrateDisplay" style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800; color: var(--neon-purple);">
+          12.50 GOps/s
+        </div>
+      </div>
+      <div class="glass-panel" style="text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-gray);">DYNAMIC DIFFICULTY (DAA)</div>
+        <div id="difficultyDisplay" style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800; color: var(--neon-gold);">
+          14.82M (0x1d00ffff)
+        </div>
+      </div>
+      <div class="glass-panel" style="text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-gray);">ECOSYSTEM DEFLATION BURN</div>
+        <div class="omni-total-burned-display" style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800; color: var(--neon-red);">
+          🔥 14,250,800 OMNI
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid-3col">
+      <!-- Col 1: Hardware & Power Governor -->
+      <div class="glass-panel">
+        <h2 style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">Device Hardware Governor</h2>
+
+        <div class="stat-row">
+          <span class="stat-label">Mining Engine</span>
+          <span class="stat-val" style="color: var(--neon-cyan);">PoUNW INT4 SIMD</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Neural Hashrate</span>
+          <span id="guiHashRateDisplay" class="stat-val" style="color: var(--neon-cyan);">0 Ops/s</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Estimated Power</span>
+          <span id="guiPowerDrawDisplay" class="stat-val" style="color: var(--neon-green);">~75 mW (Ultra Cool)</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Micro-Shares Streamed</span>
+          <span id="guiSharesDisplay" class="stat-val" style="color: var(--neon-purple);">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Payout Protocol</span>
+          <span class="stat-val" style="color: var(--neon-gold);">Stratum V2 (PPLNS)</span>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label style="font-size: 0.75rem; color: var(--text-gray); font-weight: 600;">POWER PROFILE</label>
+          <div class="power-mode-buttons">
+            <button class="btn-mode" onclick="setPowerMode('ECO')">Eco (25mW)</button>
+            <button class="btn-mode active" onclick="setPowerMode('BALANCED')">Balanced (75mW)</button>
+            <button class="btn-mode" onclick="setPowerMode('TURBO')">Turbo (150mW)</button>
+            <button class="btn-mode" onclick="setPowerMode('QUANTUM_NPU')">NPU (220mW)</button>
+          </div>
+        </div>
+
+        <button id="btnToggleGuiMining" class="btn-start-mining" onclick="toggleGuiMining()">
+          ⚡ START FRACTIONAL MINER
+        </button>
+      </div>
+
+      <!-- Col 2: 250k Global Node Shard Matrix Visualizer -->
+      <div class="glass-panel">
+        <h2 style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">250k Global Node Matrix</h2>
+        <canvas id="nodeMapCanvas" width="400" height="300"></canvas>
+      </div>
+
+      <!-- Col 3: Live PPLNS Fractional Payout Stream -->
+      <div class="glass-panel">
+        <h2 style="font-size: 1.1rem; margin-bottom: 10px; color: #fff;">Live Shard Validation Stream</h2>
+        <div id="guiTerminalConsole" class="terminal-window">
+          <div class="terminal-entry log-cyan">⚡ OmniPool 250,000 Node PPLNS Network Synchronized.</div>
+          <div class="terminal-entry log-yellow">DAA Retarget Active: Target 0.4s finality. Current Era: 1 (25 OMNI).</div>
+          <div class="terminal-entry log-purple">Stratum V2 Encrypted Job Channel Initialized.</div>
+          <div class="terminal-entry log-dim">Ready. Click 'START FRACTIONAL MINER' or 'Run Hardware Benchmark'.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stratum V2 Mempool Transaction Assembler -->
+    <div class="glass-panel" style="margin-top: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 1.1rem; color: #fff;">Stratum V2 Mempool Transaction Assembler (Custom Block Template)</h2>
+        <span style="font-size: 0.75rem; color: var(--neon-green); font-family: var(--font-mono);">
+          🛡️ Anti-Censorship Decentralized Job Negotiation
+        </span>
+      </div>
+      <table class="mempool-table">
+        <thead>
+          <tr>
+            <th>TX HASH</th>
+            <th>TRANSACTION TYPE</th>
+            <th>PRIORITY GAS FEE</th>
+            <th>PRIORITY</th>
+            <th>BLOCK PACKING STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: var(--neon-cyan);">0x8fa1...c291</td>
+            <td>DEX Swap (OMNI/USDT)</td>
+            <td style="color: var(--neon-gold);">0.042 $OMNI</td>
+            <td><span style="color: var(--neon-green); font-weight: bold;">HIGH</span></td>
+            <td style="color: var(--neon-green);">✔ PACKED IN HEADER</td>
+          </tr>
+          <tr>
+            <td style="color: var(--neon-cyan);">0x3e19...77b4</td>
+            <td>LayerZero OFT V2 Bridge</td>
+            <td style="color: var(--neon-gold);">0.085 $OMNI</td>
+            <td><span style="color: var(--neon-red); font-weight: bold;">CRITICAL</span></td>
+            <td style="color: var(--neon-green);">✔ PACKED IN HEADER</td>
+          </tr>
+          <tr>
+            <td style="color: var(--neon-cyan);">0x1c80...a412</td>
+            <td>OmniBrain AI Inference Shard</td>
+            <td style="color: var(--neon-gold);">0.024 $OMNI</td>
+            <td><span style="color: var(--neon-green); font-weight: bold;">HIGH</span></td>
+            <td style="color: var(--neon-green);">✔ PACKED IN HEADER</td>
+          </tr>
+          <tr>
+            <td style="color: var(--neon-cyan);">0x77d2...f09e</td>
+            <td>Kronos NFT Weapon Upgrade</td>
+            <td style="color: var(--neon-gold);">0.050 $OMNI</td>
+            <td><span style="color: var(--neon-gold); font-weight: bold;">MEDIUM</span></td>
+            <td style="color: var(--neon-green);">✔ PACKED IN HEADER</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="omni_universal_deflation_engine.js"></script>
+  <script src="omnipool_fractional_engine.js"></script>
+  <script src="omni_mining_protocol_v3.js"></script>
+
+  <script>
+    let isGuiMining = false;
+    let powerMode = "BALANCED";
+    let currentHashRate = 0;
+    let opsInterval = 0;
+    let minerInterval = null;
+    let reportInterval = null;
+
+    const matrixSize = 32;
+    const weights = new Int8Array(matrixSize * matrixSize);
+    for (let i = 0; i < weights.length; i++) weights[i] = (Math.random() * 15 - 7) | 0;
+
+    function logTerminal(text, colorClass = "log-cyan") {
+      const consoleEl = document.getElementById("guiTerminalConsole");
+      if (!consoleEl) return;
+      const ts = new Date().toLocaleTimeString();
+      const entry = document.createElement("div");
+      entry.className = `terminal-entry ${colorClass}`;
+      entry.innerHTML = `<span class="log-dim">[${ts}]</span> ${text}`;
+      consoleEl.appendChild(entry);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    async function runInAppBenchmark() {
+      logTerminal("⚡ Initializing Hardware INT4 Tensor Benchmark...", "log-yellow");
+      if (window.omniMiningProtocol) {
+        const result = await window.omniMiningProtocol.runHardwareBenchmark(pct => {
+          logTerminal(`  Hardware Benchmark Progress: ${pct}%...`, "log-dim");
+        });
+        logTerminal(`✔ Benchmark Complete! Speed: ${result.opsPerSec.toLocaleString()} Ops/s (${result.gigaFlops} GFLOPS)`, "log-green");
+        logTerminal(`💰 Est. Earnings: +${result.estDailyOmni} $OMNI/Day (~$${result.estDailyUsd} USD)`, "log-yellow");
+      }
+    }
+
+    function setPowerMode(mode) {
+      powerMode = mode;
+      document.querySelectorAll(".btn-mode").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+      
+      const powerDisplay = document.getElementById("guiPowerDrawDisplay");
+      const powers = { ECO: "~25 mW (Ultra Cool)", BALANCED: "~75 mW (Battery Safe)", TURBO: "~150 mW (Peak Speed)", QUANTUM_NPU: "~220 mW (Max Yield)" };
+      if (powerDisplay) powerDisplay.innerText = powers[mode] || "~75 mW";
+      logTerminal(`Thermal Power Mode changed to: ${mode}`, "log-yellow");
+    }
+
+    function toggleGuiMining() {
+      const btn = document.getElementById("btnToggleGuiMining");
+      if (isGuiMining) {
+        // Stop
+        isGuiMining = false;
+        clearInterval(minerInterval);
+        clearInterval(reportInterval);
+        if (window.omniPoolEngine) window.omniPoolEngine.stopPoolMining();
+
+        if (btn) {
+          btn.innerText = "⚡ START FRACTIONAL MINER";
+          btn.classList.remove("mining-active");
+        }
+        document.getElementById("guiHashRateDisplay").innerText = "0 Ops/s";
+        logTerminal("🛑 Fractional mining stream paused by user.", "log-red");
+      } else {
+        // Start
+        isGuiMining = true;
+        if (btn) {
+          btn.innerText = "🛑 STOP FRACTIONAL MINER";
+          btn.classList.add("mining-active");
+        }
+        logTerminal("🚀 Stratum V2 Encrypted Stream Connected. Packing Mempool...", "log-green");
+
+        let nonce = Math.floor(Math.random() * 1000000);
+        const batchSize = powerMode === "ECO" ? 500 : (powerMode === "BALANCED" ? 2000 : 5000);
+
+        minerInterval = setInterval(() => {
+          if (!isGuiMining) return;
+          for (let i = 0; i < batchSize; i++) {
+            nonce++;
+            opsInterval++;
+
+            let acc = 0;
+            const offset = nonce % matrixSize;
+            for (let j = 0; j < matrixSize; j++) {
+              acc += weights[j * matrixSize + offset] * (((nonce ^ (j * 17)) & 0x0F) - 7);
+            }
+
+            if ((nonce ^ acc) % 50000 === 0) {
+              const jackpot = 24.9125;
+              if (window.omniPoolEngine) {
+                window.omniPoolEngine.minedBalance += jackpot;
+                window.omniPoolEngine.updateMinerUI();
+              }
+              logTerminal(`🎉 SOLO JACKPOT! Block #${nonce} solved! Reward: +${jackpot} $OMNI`, "log-yellow");
+            }
+          }
+        }, 50);
+
+        reportInterval = setInterval(() => {
+          if (!isGuiMining) return;
+          currentHashRate = Math.round(opsInterval / 1.0);
+          opsInterval = 0;
+          document.getElementById("guiHashRateDisplay").innerText = currentHashRate.toLocaleString() + " Ops/s";
+          
+          if (window.omniPoolEngine) {
+            document.getElementById("guiSharesDisplay").innerText = window.omniPoolEngine.sharesAccepted.toLocaleString();
+          }
+        }, 1000);
+
+        if (window.omniPoolEngine) {
+          window.omniPoolEngine.startPoolMining(() => currentHashRate || 50000);
+        }
+      }
+    }
+
+    // Node Canvas Visualizer
+    const canvas = document.getElementById("nodeMapCanvas");
+    const ctx = canvas.getContext("2d");
+    const nodes = [];
+    for (let i = 0; i < 75; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1.5,
+        pulse: Math.random() * Math.PI,
+        color: i % 3 === 0 ? "#00e5ff" : (i % 3 === 1 ? "#a855f7" : "#10b981")
+      });
+    }
+
+    function renderNodeMatrix() {
+      ctx.fillStyle = "rgba(5, 6, 11, 0.25)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      nodes.forEach(n => {
+        n.pulse += 0.05;
+        const currentRadius = n.radius + Math.sin(n.pulse) * 1.5;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, Math.max(currentRadius, 1), 0, Math.PI * 2);
+        ctx.fillStyle = n.color;
+        ctx.shadowBlur = isGuiMining ? 12 : 4;
+        ctx.shadowColor = n.color;
+        ctx.fill();
+
+        if (isGuiMining && Math.random() > 0.96) {
+          const target = nodes[Math.floor(Math.random() * nodes.length)];
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(target.x, target.y);
+          ctx.strokeStyle = "rgba(0, 229, 255, 0.15)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      });
+
+      requestAnimationFrame(renderNodeMatrix);
+    }
+    renderNodeMatrix();
+  </script>
+</body>
+</html>
