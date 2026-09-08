@@ -496,6 +496,97 @@
       box-shadow: 0 4px 18px rgba(246, 133, 27, 0.3);
     }
 
+    .btn-network-add {
+      width: 100%;
+      background: rgba(70, 24, 200, 0.22);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #c084fc;
+      padding: 12px;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-network-add:hover {
+      background: rgba(70, 24, 200, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.35);
+    }
+
+    /* Card Navigation Tabs */
+    .card-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .card-tab.active {
+      background: var(--accent-purple);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    }
+
+    .card-tab:hover:not(.active) {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .btn-max {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: var(--accent-purple);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-max:hover {
+      background: var(--accent-purple);
+      color: #fff;
+    }
+
     /* Links row */
     .links-footer {
       width: 100%;
@@ -523,10 +614,10 @@
 
   <header>
     <div class="brand">
-      <img src="omni-logo-256.png" class="brand-logo" alt="OMNI" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 18px var(--glass-glow);">
+      <img src="omni-network-icon-256.png" class="brand-logo" alt="OMNI Network" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 18px var(--glass-glow);">
       <div>
         <div class="brand-title">OMNI Network DEX Portal</div>
-        <div class="network-badge">Sepolia Testnet (ID: 11155111)</div>
+        <div class="network-badge">Sepolia Testnet (ID: 11155111) & OMNI Chain (39821)</div>
       </div>
     </div>
     <div class="header-actions">
@@ -595,74 +686,157 @@
       </div>
     </div>
 
-    <!-- Right Column: Interactive Swap Card -->
+    <!-- Right Column: Interactive Swap, Send & Receive Card -->
     <div class="card swap-card">
-      <div class="card-header">
-        <div class="card-title">Instant Swap</div>
-        <div id="walletBalDisplay" style="font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono';">Not Connected</div>
+      
+      <!-- Card Tabs -->
+      <div class="card-tabs">
+        <button class="card-tab active" id="tabSwapBtn" onclick="switchCardTab('swap')">🔄 Swap</button>
+        <button class="card-tab" id="tabSendBtn" onclick="switchCardTab('send')">↗ Send</button>
+        <button class="card-tab" id="tabReceiveBtn" onclick="switchCardTab('receive')">↙ Receive</button>
       </div>
 
-      <!-- Input Box -->
-      <div class="swap-box">
-        <div class="swap-box-header">
-          <span>You Pay</span>
-          <span id="inBalance">Balance: --</span>
+      <!-- Tab 1: Swap -->
+      <div id="tabSwap" class="tab-pane active">
+        <div class="card-header" style="margin-bottom: 14px;">
+          <div class="card-title">Instant DEX Swap</div>
+          <div id="walletBalDisplay" style="font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono';">Not Connected</div>
         </div>
-        <div class="swap-box-content">
-          <input type="number" id="inputAmount" class="swap-input" placeholder="0.0" value="0.001" oninput="calculateQuote()">
-          <div class="token-select">
-            <div class="token-icon" style="background: linear-gradient(135deg, #627eea, #3b82f6);">Ξ</div>
-            <span id="inputSymbol">ETH</span>
+
+        <!-- Input Box -->
+        <div class="swap-box">
+          <div class="swap-box-header">
+            <span>You Pay</span>
+            <span id="inBalance">Balance: --</span>
+          </div>
+          <div class="swap-box-content">
+            <input type="number" id="inputAmount" class="swap-input" placeholder="0.0" value="0.001" oninput="calculateQuote()">
+            <div class="token-select">
+              <div class="token-icon" style="background: linear-gradient(135deg, #627eea, #3b82f6);">Ξ</div>
+              <span id="inputSymbol">ETH</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggle Button -->
+        <div class="swap-toggle-row">
+          <button class="btn-toggle" onclick="toggleDirection()" title="Switch direction">⇅</button>
+        </div>
+
+        <!-- Output Box -->
+        <div class="swap-box">
+          <div class="swap-box-header">
+            <span>You Receive (Estimated)</span>
+            <span id="outBalance">Balance: --</span>
+          </div>
+          <div class="swap-box-content">
+            <input type="number" id="outputAmount" class="swap-input" placeholder="0.0" readonly>
+            <div class="token-select">
+              <img src="omni-logo-256.png" id="outputTokenIcon" class="token-icon" alt="OMNI Token" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+              <span id="outputSymbol">OMNI</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote Details -->
+        <div class="quote-details">
+          <div class="quote-row">
+            <span>Exchange Rate</span>
+            <span id="rateDisplay">1 OMNI ≈ 0.00003333 ETH ($0.10)</span>
+          </div>
+          <div class="quote-row">
+            <span>DEX Router</span>
+            <span>Uniswap V3 (Sepolia 0.3%)</span>
+          </div>
+          <div class="quote-row">
+            <span>Price Impact</span>
+            <span style="color: var(--accent-emerald);">< 0.05%</span>
+          </div>
+        </div>
+
+        <!-- Direct Swap via Web3 or Uniswap -->
+        <button class="btn-swap-main" id="btnAction" onclick="executeSwap()">Swap on Uniswap V3</button>
+
+        <a href="https://app.uniswap.org/swap?chain=sepolia&inputCurrency=ETH&outputCurrency=0x523fA2008402BD45590113A1f7aC13E5C7075Fff" target="_blank" class="btn-uniswap-direct">
+          <span>🦄 Open Directly in Uniswap Interface</span> ↗
+        </a>
+      </div>
+
+      <!-- Tab 2: Send OMNI -->
+      <div id="tabSend" class="tab-pane">
+        <div class="card-header" style="margin-bottom: 14px;">
+          <div class="card-title">Send OMNI Tokens</div>
+          <div id="sendWalletBalDisplay" style="font-size: 13px; color: var(--accent-emerald); font-family: 'JetBrains Mono';">-- OMNI</div>
+        </div>
+
+        <div class="swap-box">
+          <div class="swap-box-header">
+            <span>Recipient Address</span>
+            <span>Ethereum / Sepolia / OMNI Chain</span>
+          </div>
+          <div class="swap-box-content">
+            <input type="text" id="sendRecipient" class="swap-input" placeholder="0x..." style="font-size: 16px; font-weight: 500;">
+          </div>
+        </div>
+
+        <div class="swap-box">
+          <div class="swap-box-header">
+            <span>Amount to Send</span>
+            <span>
+              Available: <span id="sendAvailableBal">--</span>
+              <button class="btn-max" onclick="setMaxSend()">MAX</button>
+            </span>
+          </div>
+          <div class="swap-box-content">
+            <input type="number" id="sendAmount" class="swap-input" placeholder="0.0">
+            <div class="token-select">
+              <img src="omni-logo-256.png" class="token-icon" alt="OMNI" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+              <span>OMNI</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-swap-main" id="btnSendAction" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35); margin-top: 10px;" onclick="sendOmniToken()">
+          Send OMNI
+        </button>
+      </div>
+
+      <!-- Tab 3: Receive OMNI -->
+      <div id="tabReceive" class="tab-pane">
+        <div class="card-header" style="margin-bottom: 14px;">
+          <div class="card-title">Receive OMNI Tokens</div>
+          <span class="network-badge">Direct Inbound</span>
+        </div>
+
+        <div style="text-align: center; padding: 18px 0;">
+          <div style="width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 20px; background: rgba(0, 253, 151, 0.1); border: 2px solid #00FD97; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 24px rgba(0, 253, 151, 0.25);">
+            <img src="omni-logo-256.png" alt="OMNI" style="width: 52px; height: 52px; border-radius: 14px; object-fit: cover;">
+          </div>
+          <div style="font-size: 15px; color: var(--text-muted); margin-bottom: 8px;">Your Connected Wallet Address:</div>
+          <div id="receiveAddressDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #fff; background: rgba(0,0,0,0.5); padding: 10px 14px; border-radius: 10px; word-break: break-all; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 14px;">
+            Connect Wallet to View Address
+          </div>
+          <button class="btn-uniswap-direct" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #fff; margin-bottom: 14px;" onclick="copyReceiveAddress()">
+            📋 Copy Your Address to Receive
+          </button>
+          <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+            Share this address to receive OMNI tokens on Sepolia or the OMNI Network. Anyone can send OMNI directly to this address.
           </div>
         </div>
       </div>
 
-      <!-- Toggle Button -->
-      <div class="swap-toggle-row">
-        <button class="btn-toggle" onclick="toggleDirection()" title="Switch direction">⇅</button>
+      <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px; margin-top: 16px;">
+        <button class="btn-metamask-add" onclick="addTokenToMetaMask()">
+          <img src="omni-logo-256.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" alt="Alien">
+          <span>🦊 Add OMNI Token (Green Alien Logo) to MetaMask</span>
+        </button>
+
+        <button class="btn-network-add" onclick="addOmniNetworkToMetaMask()">
+          <img src="omni-network-icon-256.png" style="width: 20px; height: 20px; border-radius: 6px; object-fit: cover;" alt="Diamond">
+          <span>🌐 Add OMNI Network (Diamond on Purple Logo) to MetaMask</span>
+        </button>
       </div>
 
-      <!-- Output Box -->
-      <div class="swap-box">
-        <div class="swap-box-header">
-          <span>You Receive (Estimated)</span>
-          <span id="outBalance">Balance: --</span>
-        </div>
-        <div class="swap-box-content">
-          <input type="number" id="outputAmount" class="swap-input" placeholder="0.0" readonly>
-          <div class="token-select">
-            <img src="omni-logo-256.png" id="outputTokenIcon" class="token-icon" alt="OMNI" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
-            <span id="outputSymbol">OMNI</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quote Details -->
-      <div class="quote-details">
-        <div class="quote-row">
-          <span>Exchange Rate</span>
-          <span id="rateDisplay">1 OMNI ≈ 0.00003333 ETH ($0.10)</span>
-        </div>
-        <div class="quote-row">
-          <span>DEX Router</span>
-          <span>Uniswap V3 (Sepolia 0.3%)</span>
-        </div>
-        <div class="quote-row">
-          <span>Price Impact</span>
-          <span style="color: var(--accent-emerald);">< 0.05%</span>
-        </div>
-      </div>
-
-      <!-- Direct Swap via Web3 or Uniswap -->
-      <button class="btn-swap-main" id="btnAction" onclick="executeSwap()">Swap on Uniswap V3</button>
-
-      <a href="https://app.uniswap.org/swap?chain=sepolia&inputCurrency=ETH&outputCurrency=0x523fA2008402BD45590113A1f7aC13E5C7075Fff" target="_blank" class="btn-uniswap-direct">
-        <span>🦄 Open Directly in Uniswap Interface</span> ↗
-      </a>
-
-      <button class="btn-metamask-add" onclick="addTokenToMetaMask()">
-        <span>🦊 Add OMNI + Logo to MetaMask</span>
-      </button>
     </div>
 
   </div>
@@ -765,6 +939,18 @@
           document.getElementById('inBalance').innerText = `Balance: ${omniFmt} OMNI`;
           document.getElementById('outBalance').innerText = `Balance: ${ethFmt} ETH`;
         }
+
+        // Update Send and Receive tab displays
+        if (document.getElementById('sendWalletBalDisplay')) {
+          document.getElementById('sendWalletBalDisplay').innerText = `${omniFmt} OMNI`;
+        }
+        if (document.getElementById('sendAvailableBal')) {
+          document.getElementById('sendAvailableBal').innerText = `${omniFmt} OMNI`;
+        }
+        if (document.getElementById('receiveAddressDisplay')) {
+          document.getElementById('receiveAddressDisplay').innerText = userAddress;
+        }
+        window.userOmniRawBalance = ethers.formatEther(omniBal);
       } catch (e) {
         console.error("Error updating balances:", e);
       }
@@ -817,6 +1003,80 @@
       }
     }
 
+    function switchCardTab(tabName) {
+      document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+      if (tabName === 'swap') {
+        document.getElementById('tabSwapBtn').classList.add('active');
+        document.getElementById('tabSwap').classList.add('active');
+      } else if (tabName === 'send') {
+        document.getElementById('tabSendBtn').classList.add('active');
+        document.getElementById('tabSend').classList.add('active');
+      } else if (tabName === 'receive') {
+        document.getElementById('tabReceiveBtn').classList.add('active');
+        document.getElementById('tabReceive').classList.add('active');
+      }
+      updateBalances();
+    }
+
+    function setMaxSend() {
+      if (window.userOmniRawBalance) {
+        document.getElementById('sendAmount').value = window.userOmniRawBalance;
+      } else {
+        document.getElementById('sendAmount').value = "491705.77";
+      }
+    }
+
+    async function sendOmniToken() {
+      if (!signer || !userAddress) {
+        await connectWallet();
+        if (!signer) return;
+      }
+      const to = document.getElementById('sendRecipient').value.trim();
+      const amt = document.getElementById('sendAmount').value.trim();
+      if (!to || !ethers.isAddress(to)) {
+        alert("Please enter a valid recipient 0x Ethereum address!");
+        return;
+      }
+      if (!amt || parseFloat(amt) <= 0) {
+        alert("Please enter a valid OMNI amount to send!");
+        return;
+      }
+
+      try {
+        const btn = document.getElementById('btnSendAction');
+        btn.innerText = "Confirm in MetaMask...";
+        const omniAbi = [
+          "function transfer(address to, uint256 amount) external returns (bool)"
+        ];
+        const omniContract = new ethers.Contract(OMNI_ADDRESS, omniAbi, signer);
+        const parsedAmt = ethers.parseEther(amt);
+
+        const tx = await omniContract.transfer(to, parsedAmt);
+        btn.innerText = "Broadcasting Transaction...";
+        await tx.wait();
+        alert(`🎉 Successfully sent ${amt} OMNI to ${to.slice(0, 6)}...${to.slice(-4)}!`);
+        btn.innerText = "Send OMNI";
+        document.getElementById('sendAmount').value = "";
+        updateBalances();
+      } catch (err) {
+        console.error(err);
+        alert("Send error: " + (err.reason || err.message));
+        document.getElementById('btnSendAction').innerText = "Send OMNI";
+      }
+    }
+
+    function copyReceiveAddress() {
+      if (!userAddress) {
+        alert("Please connect your wallet first!");
+        connectWallet();
+        return;
+      }
+      navigator.clipboard.writeText(userAddress);
+      alert("🎉 Copied your wallet address to clipboard:\n" + userAddress);
+    }
+
     async function addTokenToMetaMask() {
       if (!window.ethereum) {
         alert("MetaMask not detected! Please open in a browser with MetaMask installed.");
@@ -831,16 +1091,43 @@
               address: OMNI_ADDRESS,
               symbol: 'OMNI',
               decimals: 18,
-              image: 'https://raw.githubusercontent.com/X3DevBlake/omni-network/623982f4065ba9fc571e0d49c3d63e7477ee9c57/omni-logo-256.png',
+              image: 'https://raw.githubusercontent.com/X3DevBlake/omni-network/6afa5a2/omni-logo-256.png',
             },
           },
         });
         if (wasAdded) {
-          alert("🎉 OMNI token with official logo added to your MetaMask!");
+          alert("🎉 OMNI token with official Green Alien logo added to your MetaMask!");
         }
       } catch (error) {
         console.error(error);
         alert("Could not add token to MetaMask: " + error.message);
+      }
+    }
+
+    async function addOmniNetworkToMetaMask() {
+      if (!window.ethereum) {
+        alert("MetaMask not detected! Please install MetaMask to add OMNI Network.");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x9B8D', // 39821 in hex
+            chainName: 'OMNI Network',
+            nativeCurrency: {
+              name: 'OMNI',
+              symbol: 'OMNI',
+              decimals: 18
+            },
+            rpcUrls: ['http://127.0.0.1:8545'],
+            iconUrls: ['https://raw.githubusercontent.com/X3DevBlake/omni-network/6afa5a2/omni-network-icon-256.png']
+          }]
+        });
+        alert("🎉 OMNI Network with official Diamond on Purple logo added to MetaMask!");
+      } catch (error) {
+        console.error(error);
+        alert("Error adding OMNI Network to MetaMask: " + error.message);
       }
     }
 
