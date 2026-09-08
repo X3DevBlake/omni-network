@@ -140,5 +140,13 @@
   "swapRouter": "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
   "taxCollector": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
   "tokenFactory": "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
-  "omniBridge": "0x1291Be112d480055DaFd8a610b7d1e203891C274"
+  "omniBridge": "0x1291Be112d480055DaFd8a610b7d1e203891C274",
+  "omniPriceFeed": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7",
+  "valuation": {
+    "targetTokenPriceUsd": "1.00",
+    "initialTotalSupply": "1000000000",
+    "marketCapUsd": "$1,000,000,000",
+    "priceFeedAddress": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7",
+    "updatedAt": "2026-09-08T02:18:38.121Z"
+  }
 }
