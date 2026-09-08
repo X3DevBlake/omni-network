@@ -53,8 +53,8 @@ class OmniNetworkEngineV2 {
     };
   }
 
-  // Execute LayerZero OFT V2 Cross-Chain Transfer
-  executeBridgeSwap() {
+  // Execute LayerZero OFT V2 Cross-Chain Transfer with Real MetaMask Approval
+  async executeBridgeSwap() {
     const amountInput = document.getElementById("bridgeAmountInput");
     const sourceChainEl = document.getElementById("sourceChainSelect");
     const destChainEl = document.getElementById("destChainSelect");
@@ -68,20 +68,57 @@ class OmniNetworkEngineV2 {
       return;
     }
 
-    const { burnFee, netReceived } = this.calculateBridgeBurn(amount);
-    const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    if (!window.ethereum) {
+      alert("MetaMask not detected! Please open in a Web3 browser with MetaMask installed.");
+      return;
+    }
 
-    this.totalBurnedOmni += parseFloat(burnFee);
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const network = await provider.getNetwork();
 
-    alert(`🚀 LayerZero OFT V2 Cross-Chain Transfer Executed!\n\n` +
-          `Amount: ${amount.toLocaleString()} $OMNI\n` +
-          `Route: ${sourceChain} ➔ ${destChain}\n` +
-          `Deflationary 0.01% Burn: 🔥 ${burnFee} $OMNI (Burned permanently from supply!)\n` +
-          `Net Received on Destination: 💎 ${netReceived} $OMNI\n` +
-          `Estimated Finality: ~0.4s\n` +
-          `LayerZero Message TX Hash: ${txHash}`);
+      const { burnFee, netReceived } = this.calculateBridgeBurn(amount);
+      const bridgeBtn = document.getElementById("executeBridgeBtn") || document.querySelector(".btn-bridge-execute");
+      if (bridgeBtn) bridgeBtn.innerText = "Confirm in MetaMask...";
 
-    this.updateUI();
+      let tx;
+      const bridgeAddress = "0x1291Be112d480055DaFd8a610b7d1e203891C274";
+
+      if (network.chainId === 39821n) {
+        // On OMNI Network: lock native OMNI to bridge out
+        tx = await signer.sendTransaction({
+          to: bridgeAddress,
+          value: ethers.parseEther(amount.toString())
+        });
+      } else {
+        // On Sepolia or other network: transfer OMNI ERC-20 to bridge
+        const omniTokenAddr = "0x523fA2008402BD45590113A1f7aC13E5C7075Fff";
+        const omniAbi = ["function transfer(address to, uint256 amount) external returns (bool)"];
+        const omniContract = new ethers.Contract(omniTokenAddr, omniAbi, signer);
+        tx = await omniContract.transfer(bridgeAddress, ethers.parseEther(amount.toString()));
+      }
+
+      if (bridgeBtn) bridgeBtn.innerText = "Broadcasting Bridge Tx...";
+      await tx.wait();
+
+      this.totalBurnedOmni += parseFloat(burnFee);
+      alert(`🎉 Bridge Transaction Confirmed on Blockchain!\n\n` +
+            `Amount: ${amount.toLocaleString()} OMNI\n` +
+            `Route: ${sourceChain} ➔ ${destChain}\n` +
+            `Deflationary 0.01% Burn: 🔥 ${burnFee} OMNI\n` +
+            `Net Received: 💎 ${netReceived} OMNI\n` +
+            `On-Chain Tx Hash: ${tx.hash}`);
+
+      if (bridgeBtn) bridgeBtn.innerText = "Execute Cross-Chain Transfer";
+      this.updateUI();
+    } catch (err) {
+      console.error(err);
+      alert("Bridge transaction failed: " + (err.reason || err.message));
+      const bridgeBtn = document.getElementById("executeBridgeBtn") || document.querySelector(".btn-bridge-execute");
+      if (bridgeBtn) bridgeBtn.innerText = "Execute Cross-Chain Transfer";
+    }
   }
 
   // One-Click Web3 Wallet RPC Configurator
@@ -91,19 +128,19 @@ class OmniNetworkEngineV2 {
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0x9999', // Chain ID 39321
-            chainName: 'OMNI Network Mainnet',
+            chainId: '0x9B8D', // 39821 in hex
+            chainName: 'OMNI Network',
             nativeCurrency: { name: 'OMNI', symbol: 'OMNI', decimals: 18 },
-            rpcUrls: ['https://rpc.omni-network-39821.web.app'],
-            blockExplorerUrls: ['https://omni-explorer-39821.web.app']
+            rpcUrls: ['http://127.0.0.1:8545'],
+            iconUrls: ['https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-network-icon-256.png']
           }]
         });
-        alert("🎉 OMNI Network Mainnet successfully configured in your Web3 Wallet!\n\nChain ID: 39321 (0x9999)\nRPC: https://rpc.omni-network-39821.web.app\nCurrency: OMNI");
+        alert("🎉 OMNI Network successfully added to MetaMask!\n\nChain ID: 39821 (0x9B8D)\nRPC: http://127.0.0.1:8545\nCurrency: OMNI\nLogo: Diamond on Black");
       } catch (error) {
-        alert("Wallet configuration request issued:\nChain ID: 39321 (0x9999)\nRPC: https://rpc.omni-network-39821.web.app\nCurrency: OMNI");
+        alert("Error configuring OMNI Network in MetaMask: " + error.message);
       }
     } else {
-      alert("Custom OMNI Network RPC Parameters:\n\nNetwork Name: OMNI Network Mainnet\nChain ID: 39321 (0x9999)\nCurrency Symbol: OMNI\nRPC URL: https://rpc.omni-network-39821.web.app\nExplorer URL: https://omni-explorer-39821.web.app");
+      alert("Custom OMNI Network RPC Parameters:\n\nNetwork Name: OMNI Network\nChain ID: 39821 (0x9B8D)\nCurrency Symbol: OMNI\nRPC URL: http://127.0.0.1:8545\nLogo: Diamond on Black");
     }
   }
 

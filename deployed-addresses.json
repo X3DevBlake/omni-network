@@ -2,60 +2,60 @@
   "chainId": 39821,
   "rpcUrl": "http://localhost:8545",
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "deployedAt": 1782562716776,
+  "deployedAt": 1788831608025,
   "tokens": {
     "OMNI": {
-      "address": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "symbol": "OMNI",
       "decimals": 18
     },
     "sOMNI": {
-      "address": "0x6C2d83262fF84cBaDb3e416D527403135D757892",
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       "symbol": "sOMNI",
       "decimals": 18
     },
     "USDT": {
-      "address": "0xa6e99A4ED7498b3cdDCBB61a6A607a4925Faa1B7",
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       "symbol": "USDT",
       "decimals": 6
     },
     "WETH": {
-      "address": "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       "symbol": "WETH",
       "decimals": 18
     },
     "USDC": {
-      "address": "0x0ed64d01D0B4B655E410EF1441dD677B695639E7",
+      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "symbol": "USDC",
       "decimals": 6
     },
     "WBTC": {
-      "address": "0x4bf010f1b9beDA5450a8dD702ED602A104ff65EE",
+      "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       "symbol": "WBTC",
       "decimals": 8
     },
     "WSOL": {
-      "address": "0x40a42Baf86Fc821f972Ad2aC878729063CeEF403",
+      "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       "symbol": "WSOL",
       "decimals": 9
     },
     "WBNB": {
-      "address": "0x96F3Ce39Ad2BfDCf92C0F6E2C2CAbF83874660Fc",
+      "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       "symbol": "WBNB",
       "decimals": 18
     },
     "WAVAX": {
-      "address": "0x986aaa537b8cc170761FDAC6aC4fc7F9d8a20A8C",
+      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       "symbol": "WAVAX",
       "decimals": 18
     },
     "WMATIC": {
-      "address": "0xde2Bd2ffEA002b8E84ADeA96e5976aF664115E2c",
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
       "symbol": "WMATIC",
       "decimals": 18
     },
     "WARB": {
-      "address": "0xefc1aB2475ACb7E60499Efb171D173be19928a05",
+      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       "symbol": "WARB",
       "decimals": 18
     }
@@ -64,81 +64,81 @@
     {
       "tokenA": "USDT",
       "tokenB": "OMNI",
-      "addressA": "0xa6e99A4ED7498b3cdDCBB61a6A607a4925Faa1B7",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "1.0"
     },
     {
       "tokenA": "WETH",
       "tokenB": "OMNI",
-      "addressA": "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "3450.0"
     },
     {
       "tokenA": "USDC",
       "tokenB": "OMNI",
-      "addressA": "0x0ed64d01D0B4B655E410EF1441dD677B695639E7",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "1.0"
     },
     {
       "tokenA": "WBTC",
       "tokenB": "OMNI",
-      "addressA": "0x4bf010f1b9beDA5450a8dD702ED602A104ff65EE",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "62500.0"
     },
     {
       "tokenA": "WSOL",
       "tokenB": "OMNI",
-      "addressA": "0x40a42Baf86Fc821f972Ad2aC878729063CeEF403",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "145.0"
     },
     {
       "tokenA": "WBNB",
       "tokenB": "OMNI",
-      "addressA": "0x96F3Ce39Ad2BfDCf92C0F6E2C2CAbF83874660Fc",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "580.0"
     },
     {
       "tokenA": "WAVAX",
       "tokenB": "OMNI",
-      "addressA": "0x986aaa537b8cc170761FDAC6aC4fc7F9d8a20A8C",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "35.0"
     },
     {
       "tokenA": "WMATIC",
       "tokenB": "OMNI",
-      "addressA": "0xde2Bd2ffEA002b8E84ADeA96e5976aF664115E2c",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "0.7"
     },
     {
       "tokenA": "WARB",
       "tokenB": "OMNI",
-      "addressA": "0xefc1aB2475ACb7E60499Efb171D173be19928a05",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "1.1"
     },
     {
       "tokenA": "sOMNI",
       "tokenB": "OMNI",
-      "addressA": "0x6C2d83262fF84cBaDb3e416D527403135D757892",
-      "addressB": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
+      "addressA": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "addressB": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       "initialPrice": "1.05"
     }
   ],
-  "omniToken": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
-  "somniToken": "0x6C2d83262fF84cBaDb3e416D527403135D757892",
-  "gaslessPaymaster": "0xFD6F7A6a5c21A3f503EBaE7a473639974379c351",
-  "dexPairs": "0x870526b7973b56163a6997bB7C886F5E4EA53638",
-  "omniMiner": "0x70bDA08DBe07363968e9EE53d899dFE48560605B",
-  "swapRouter": "0x5D42EBdBBa61412295D7b0302d6F50aC449Ddb4F",
-  "taxCollector": "0x38A70c040CA5F5439ad52d0e821063b0EC0B52b6",
-  "tokenFactory": "0x54B8d8E2455946f2A5B8982283f2359812e815ce",
-  "omniBridge": "0xf090f16dEc8b6D24082Edd25B1C8D26f2bC86128"
+  "omniToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "somniToken": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "gaslessPaymaster": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+  "dexPairs": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+  "omniMiner": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+  "swapRouter": "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+  "taxCollector": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+  "tokenFactory": "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
+  "omniBridge": "0x1291Be112d480055DaFd8a610b7d1e203891C274"
 }
