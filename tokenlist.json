@@ -20,7 +20,7 @@
       "description": "In-game economy and metaverse utility tokens"
     }
   },
-  "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+  "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
   "keywords": ["omni", "defi", "layer2", "metaverse", "swap"],
   "tokens": [
     {
@@ -29,7 +29,7 @@
       "name": "OMNI Network Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
       "tags": ["defi", "l2", "gaming"],
       "extensions": {
         "website": "http://localhost:8082",
@@ -43,7 +43,7 @@
       "name": "OMNI Network Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
       "tags": ["defi", "l2", "gaming"],
       "extensions": {
         "website": "http://localhost:8082",
@@ -56,7 +56,7 @@
       "name": "OMNI Network Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
       "tags": ["defi", "l2", "gaming"],
       "extensions": {
         "website": "http://localhost:8082",
@@ -69,7 +69,7 @@
       "name": "OMNI Native AppChain Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
       "tags": ["defi", "gaming"],
       "extensions": {
         "website": "http://localhost:8082"

@@ -471,6 +471,31 @@
       color: #fff;
     }
 
+    .btn-metamask-add {
+      width: 100%;
+      background: rgba(246, 133, 27, 0.12);
+      border: 1px solid rgba(246, 133, 27, 0.4);
+      color: #ff9800;
+      padding: 12px;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-metamask-add:hover {
+      background: rgba(246, 133, 27, 0.22);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 18px rgba(246, 133, 27, 0.3);
+    }
+
     /* Links row */
     .links-footer {
       width: 100%;
@@ -498,7 +523,7 @@
 
   <header>
     <div class="brand">
-      <div class="brand-logo">Ω</div>
+      <img src="omni-logo-256.png" class="brand-logo" alt="OMNI" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 18px var(--glass-glow);">
       <div>
         <div class="brand-title">OMNI Network DEX Portal</div>
         <div class="network-badge">Sepolia Testnet (ID: 11155111)</div>
@@ -606,7 +631,7 @@
         <div class="swap-box-content">
           <input type="number" id="outputAmount" class="swap-input" placeholder="0.0" readonly>
           <div class="token-select">
-            <div class="token-icon">Ω</div>
+            <img src="omni-logo-256.png" id="outputTokenIcon" class="token-icon" alt="OMNI" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
             <span id="outputSymbol">OMNI</span>
           </div>
         </div>
@@ -634,6 +659,10 @@
       <a href="https://app.uniswap.org/swap?chain=sepolia&inputCurrency=ETH&outputCurrency=0x523fA2008402BD45590113A1f7aC13E5C7075Fff" target="_blank" class="btn-uniswap-direct">
         <span>🦄 Open Directly in Uniswap Interface</span> ↗
       </a>
+
+      <button class="btn-metamask-add" onclick="addTokenToMetaMask()">
+        <span>🦊 Add OMNI + Logo to MetaMask</span>
+      </button>
     </div>
 
   </div>
@@ -785,6 +814,33 @@
       } else {
         // Redirect to Uniswap for OMNI to ETH approval flow
         window.open(`https://app.uniswap.org/swap?chain=sepolia&inputCurrency=${OMNI_ADDRESS}&outputCurrency=ETH`, "_blank");
+      }
+    }
+
+    async function addTokenToMetaMask() {
+      if (!window.ethereum) {
+        alert("MetaMask not detected! Please open in a browser with MetaMask installed.");
+        return;
+      }
+      try {
+        const wasAdded = await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: OMNI_ADDRESS,
+              symbol: 'OMNI',
+              decimals: 18,
+              image: 'https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png',
+            },
+          },
+        });
+        if (wasAdded) {
+          alert("🎉 OMNI token with official logo added to your MetaMask!");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Could not add token to MetaMask: " + error.message);
       }
     }
 
