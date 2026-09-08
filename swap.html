@@ -2038,13 +2038,40 @@ All balances updated!`);
         return;
       }
       try {
-        const iconUrl = token.icon.startsWith("http") ? token.icon : `${window.location.origin}/${token.icon}`;
+        let netChainId = currentChainId;
+        if (!netChainId && provider) {
+          try {
+            const net = await provider.getNetwork();
+            netChainId = net.chainId;
+          } catch(e) {}
+        }
+
+        // Dynamically resolve correct contract address based on connected network
+        let tokenAddress = token.address;
+        if (symbol === 'OMNI') {
+          if (netChainId === SEPOLIA_CHAIN_ID || netChainId === 11155111n) {
+            tokenAddress = OMNI_TOKEN_SEPOLIA; // 0x523fA2008402BD45590113A1f7aC13E5C7075Fff on Sepolia
+          } else if (netChainId === 8453n || netChainId === 84532n) {
+            tokenAddress = "0x36b58F5C1969B7b6591D752ea6F5486D069010AB"; // Base Sepolia
+          } else {
+            tokenAddress = OMNI_TOKENS.OMNI.address; // 0x5FbDB2315678afecb367f032d93F642f64180aa3 on OMNI Network
+          }
+        }
+
+        // Explicit fully-qualified HTTPS CDN logo URL
+        let iconUrl = token.icon;
+        if (symbol === 'OMNI') {
+          iconUrl = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png";
+        } else if (!iconUrl.startsWith("http")) {
+          iconUrl = `https://omni-network-39821.web.app/${token.icon}`;
+        }
+
         const wasAdded = await window.ethereum.request({
           method: 'wallet_watchAsset',
           params: {
             type: 'ERC20',
             options: {
-              address: token.address,
+              address: tokenAddress,
               symbol: token.symbol,
               decimals: token.decimals,
               image: iconUrl
@@ -2052,7 +2079,7 @@ All balances updated!`);
           }
         });
         if (wasAdded) {
-          alert(`🎉 ${token.symbol} added to MetaMask!`);
+          alert(`🎉 ${token.symbol} added to MetaMask!\n\nContract Address: ${tokenAddress}\nNetwork: ${netChainId === SEPOLIA_CHAIN_ID ? "Ethereum Sepolia" : "OMNI Network"}`);
         }
       } catch (err) {
         console.error(err);
