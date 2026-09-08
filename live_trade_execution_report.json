@@ -1,0 +1,48 @@
+{
+  "network": "OMNI Network (Chain 39821)",
+  "rpcGateway": "https://omni-rpc-gateway-853859261845.us-central1.run.app",
+  "valuation": {
+    "priceUsd": "$1.0000",
+    "marketCap": "$1,000,000,000 USD",
+    "oracle": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7"
+  },
+  "trades": [
+    {
+      "action": "OMNI -> USDC AMM Swap",
+      "trader": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "amountIn": "50.0 OMNI",
+      "amountOut": "49.85 USDC",
+      "txHash": "0xc149cd8fb103b92d4d201d92c387b0937f4b08e6d239e6b83a6a517e10eebc97",
+      "block": 1220714
+    },
+    {
+      "action": "USDC -> WETH Multi-Token Swap",
+      "trader": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "amountIn": "25.0 USDC",
+      "amountOut": "0.0072 WETH",
+      "txHash": "0x896a41b81d8bae4a57a082733fcfb856f5981e9b2b3b56a5f009c310971d784d",
+      "block": 1220718
+    },
+    {
+      "action": "Wrap Native OMNI to WOMNI",
+      "trader": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "amount": "10.0 OMNI",
+      "txHash": "0x3955a029561d5151c4563b5417b844299f7268ffc07daa8a5a2ef591be634450",
+      "block": 1220720
+    },
+    {
+      "action": "Unwrap WOMNI to Native OMNI",
+      "trader": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "amount": "5.0 WOMNI",
+      "txHash": "0xbcb087dfcf891d3399f46f78222add6e17a09889024afc4099327aaec837acea",
+      "block": 1220722
+    },
+    {
+      "action": "Independent Trader AMM Swap (OMNI -> USDC)",
+      "trader": "0x47FD9642e73Bd609bd8F3e837c092EcC1b4dE205",
+      "amountIn": "20.0 OMNI",
+      "txHash": "0xf986384a45980e36bea79d48b84e252c33f4dde318791576280039e2e8942af6",
+      "block": 1220732
+    }
+  ]
+}
