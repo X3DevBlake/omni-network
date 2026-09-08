@@ -58,6 +58,13 @@
       "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       "symbol": "WARB",
       "decimals": 18
+    },
+    "WOMNI": {
+      "address": "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726",
+      "symbol": "WOMNI",
+      "name": "Wrapped OMNI",
+      "decimals": 18,
+      "type": "canonical_wrapper"
     }
   },
   "pairs": [

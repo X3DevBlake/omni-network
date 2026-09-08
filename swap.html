@@ -611,7 +611,87 @@
     .links-footer a:hover {
       color: var(--accent-purple);
     }
+
+    /* Multi-Token Swap & Wrap Styles */
+    .btn-preset {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+    .btn-preset:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #fff;
+    }
+    .token-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .token-item-row:hover {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(168, 85, 247, 0.45);
+      transform: translateY(-1px);
+    }
+    .token-select-clickable {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .token-select-clickable:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+    .modal-backdrop-custom {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card-custom {
+      background: #0d0918;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 20px;
+      width: 92%;
+      max-width: 440px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+      position: relative;
+    }
+    .btn-token-action {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-token-action:hover {
+      background: var(--accent-purple);
+    }
   </style>
+
 </head>
 <body>
 
@@ -718,8 +798,10 @@
       </div>
 
       <!-- Card Tabs -->
-      <div class="card-tabs">
+      <div class="card-tabs" style="overflow-x: auto; scrollbar-width: none;">
         <button class="card-tab active" id="tabSwapBtn" onclick="switchCardTab('swap')">🔄 Swap</button>
+        <button class="card-tab" id="tabWrapBtn" onclick="switchCardTab('wrap')">📥 Wrap / Gas</button>
+        <button class="card-tab" id="tabTokensBtn" onclick="switchCardTab('tokens')">🪙 Tokens</button>
         <button class="card-tab" id="tabLiquidityBtn" onclick="switchCardTab('liquidity')">💧 Liquidity</button>
         <button class="card-tab" id="tabBridgeBtn" onclick="switchCardTab('bridge')">🌉 Bridge</button>
         <button class="card-tab" id="tabSendBtn" onclick="switchCardTab('send')">↗ Send</button>
@@ -728,9 +810,18 @@
 
       <!-- Tab 1: Swap -->
       <div id="tabSwap" class="tab-pane active">
-        <div class="card-header" style="margin-bottom: 14px;">
-          <div class="card-title">Instant DEX Swap</div>
+        <div class="card-header" style="margin-bottom: 12px;">
+          <div class="card-title">Instant Multi-Asset DEX</div>
           <div id="walletBalDisplay" style="font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono';">Not Connected</div>
+        </div>
+
+        <!-- Quick Pair Presets -->
+        <div style="display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;">
+          <button class="btn-preset" onclick="setPairPreset('USDC', 'OMNI')">💵 Buy OMNI (USDC)</button>
+          <button class="btn-preset" onclick="setPairPreset('USDT', 'OMNI')">💵 Buy OMNI (USDT)</button>
+          <button class="btn-preset" onclick="setPairPreset('OMNI', 'USDC')">💰 Sell OMNI (USDC)</button>
+          <button class="btn-preset" onclick="setPairPreset('USDC', 'WETH')">⟠ Buy ETH</button>
+          <button class="btn-preset" onclick="setPairPreset('WETH', 'OMNI')">⟠ Trade ETH</button>
         </div>
 
         <!-- Input Box -->
@@ -740,10 +831,11 @@
             <span id="inBalance">Balance: --</span>
           </div>
           <div class="swap-box-content">
-            <input type="number" id="inputAmount" class="swap-input" placeholder="0.0" value="0.001" oninput="calculateQuote()">
-            <div class="token-select">
-              <div class="token-icon" style="background: linear-gradient(135deg, #627eea, #3b82f6);">Ξ</div>
-              <span id="inputSymbol">ETH</span>
+            <input type="number" id="inputAmount" class="swap-input" placeholder="0.0" value="10" oninput="calculateQuote()">
+            <div class="token-select token-select-clickable" id="btnSelectTokenIn" onclick="openTokenModal('in')" title="Click to choose token">
+              <img id="inputTokenIcon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=035" class="token-icon" alt="Token" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+              <span id="inputSymbol">USDC</span>
+              <span style="font-size: 10px; color: var(--text-muted); margin-left: 2px;">▼</span>
             </div>
           </div>
         </div>
@@ -761,9 +853,10 @@
           </div>
           <div class="swap-box-content">
             <input type="number" id="outputAmount" class="swap-input" placeholder="0.0" readonly>
-            <div class="token-select">
-              <img src="omni-logo-256.png" id="outputTokenIcon" class="token-icon" alt="OMNI Token" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+            <div class="token-select token-select-clickable" id="btnSelectTokenOut" onclick="openTokenModal('out')" title="Click to choose token">
+              <img id="outputTokenIcon" src="omni-logo-256.png" class="token-icon" alt="OMNI Token" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
               <span id="outputSymbol">OMNI</span>
+              <span style="font-size: 10px; color: var(--text-muted); margin-left: 2px;">▼</span>
             </div>
           </div>
         </div>
@@ -772,11 +865,15 @@
         <div class="quote-details">
           <div class="quote-row">
             <span>Exchange Rate</span>
-            <span id="rateDisplay">1 OMNI ≈ 0.00003333 ETH ($0.10)</span>
+            <span id="rateDisplay">1 USDC ≈ 1.00 OMNI ($1.00)</span>
           </div>
           <div class="quote-row">
             <span>DEX Router</span>
-            <span>Uniswap V3 (Sepolia 0.3%)</span>
+            <span id="routerDisplay">OmniSwapRouter (Chain 39821)</span>
+          </div>
+          <div class="quote-row">
+            <span>Estimated Gas Fee</span>
+            <span style="color: var(--accent-emerald);">~0.000021 OMNI (< $0.0001)</span>
           </div>
           <div class="quote-row">
             <span>Price Impact</span>
@@ -784,12 +881,87 @@
           </div>
         </div>
 
-        <!-- Direct Swap via Web3 or Uniswap -->
-        <button class="btn-swap-main" id="btnAction" onclick="executeSwap()">Swap on Uniswap V3</button>
+        <!-- Direct Swap Button -->
+        <button class="btn-swap-main" id="btnAction" onclick="executeSwap()">Swap on OMNI DEX</button>
 
-        <a href="https://app.uniswap.org/swap?chain=sepolia&inputCurrency=ETH&outputCurrency=0x523fA2008402BD45590113A1f7aC13E5C7075Fff" target="_blank" class="btn-uniswap-direct">
+        <a href="https://app.uniswap.org/swap?chain=sepolia&inputCurrency=ETH&outputCurrency=0x523fA2008402BD45590113A1f7aC13E5C7075Fff" id="linkUniswapDirect" target="_blank" class="btn-uniswap-direct" style="display: none;">
           <span>🦄 Open Directly in Uniswap Interface</span> ↗
         </a>
+      </div>
+
+      <!-- Tab: Wrap / Gas Manager -->
+      <div id="tabWrap" class="tab-pane">
+        <div class="card-header" style="margin-bottom: 14px;">
+          <div class="card-title">Canonical Wrap & Gas Manager</div>
+          <span class="network-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">1:1 Canonical Peg</span>
+        </div>
+
+        <div style="background: rgba(8, 6, 18, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+            <span style="color: var(--text-muted);">Native OMNI (Gas Coin):</span>
+            <span id="wrapNativeBal" style="font-family: 'JetBrains Mono'; font-weight: 700; color: #00FD97;">-- OMNI</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span style="color: var(--text-muted);">WOMNI (Wrapped ERC-20):</span>
+            <span id="wrapWomniBal" style="font-family: 'JetBrains Mono'; font-weight: 700; color: var(--accent-purple);">-- WOMNI</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button id="btnModeDeposit" class="card-tab active" style="flex:1;" onclick="setWrapMode('deposit')">📥 Deposit (Wrap OMNI)</button>
+          <button id="btnModeWithdraw" class="card-tab" style="flex:1;" onclick="setWrapMode('withdraw')">📤 Withdraw (Pay Gas)</button>
+        </div>
+
+        <div class="swap-box" style="margin-bottom: 16px;">
+          <div class="swap-box-header">
+            <span id="wrapInputLabel">Amount to Deposit & Wrap</span>
+            <span>
+              Available: <span id="wrapAvailableBal">--</span>
+              <button class="btn-max" onclick="setMaxWrap()">MAX</button>
+            </span>
+          </div>
+          <div class="swap-box-content">
+            <input type="number" id="wrapAmount" class="swap-input" placeholder="0.0" value="10.0">
+            <div class="token-select">
+              <img src="omni-logo-256.png" class="token-icon" style="width: 24px; height: 24px; border-radius: 50%;">
+              <span id="wrapTokenSymbol">OMNI</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-swap-main" id="btnWrapAction" onclick="executeWrapOrWithdraw()">
+          ⚡ Deposit & Wrap Native OMNI
+        </button>
+
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 14px; text-align: center;">
+          💡 <strong>Withdrawals to Gas:</strong> Unwrapping WOMNI back into Native OMNI delivers instant gas coin directly to your connected MetaMask address on OMNI Network (Chain 39821).
+        </div>
+      </div>
+
+      <!-- Tab: Ecosystem Tokens & MetaMask Integration -->
+      <div id="tabTokens" class="tab-pane">
+        <div class="card-header" style="margin-bottom: 12px;">
+          <div class="card-title">Ecosystem Tokens</div>
+          <span class="network-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">Chain 39821</span>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+          OMNI Network natively hosts USDT, USDC, WETH (ETH), and WBTC. Click <strong>+ MetaMask</strong> on any token below to add it directly to your MetaMask Assets tab!
+        </div>
+
+        <!-- Tokens Table Container -->
+        <div id="tokensTableContainer" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+          <!-- Dynamically generated via JS -->
+        </div>
+
+        <!-- Quick 1-Click Faucet -->
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 14px; text-align: center;">
+          <div style="font-size: 13px; font-weight: 700; color: #10b981; margin-bottom: 4px;">🎁 Need Gas or Tokens for Testing?</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Claim 50 Native OMNI (gas) + 100 OMNI + 100 USDC + 100 USDT + 0.1 WETH + 0.005 WBTC in 1 click!</div>
+          <button class="btn-copy" style="background: rgba(16, 185, 129, 0.25); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); width: 100%; padding: 12px; font-weight: 700; border-radius: 10px; cursor: pointer; font-size: 14px;" onclick="claimSwapFaucet()">
+            ⚡ 1-Click Mega Faucet: Claim All Assets + Gas
+          </button>
+        </div>
       </div>
 
       <!-- Tab: Liquidity Pools & Yield -->
@@ -1031,81 +1203,867 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <script>
-    // Contracts on Sepolia (11155111)
+// --- Supported Contracts & Ecosystem Registry ---
     const OMNI_TOKEN_SEPOLIA = "0x523fA2008402BD45590113A1f7aC13E5C7075Fff";
     const WETH_SEPOLIA = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14";
     const POOL_SEPOLIA = "0xDa0BDD5E1523CCd07a2207cbcD54f429F200B15e";
-    const ROUTER_SEPOLIA = "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E"; // SwapRouter02
+    const ROUTER_SEPOLIA = "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E";
 
-    // Real Deployed Contracts on OMNI Network (39821)
     const OMNI_DEX_ROUTER = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
-    const OMNI_TOKEN_LOCAL = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const USDT_TOKEN_LOCAL = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-    const USDC_TOKEN_LOCAL = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
-    const WETH_TOKEN_LOCAL = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-    const SOMNI_TOKEN_LOCAL = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-
-    // Chain IDs
-    const OMNI_CHAIN_ID_HEX = "0x9B8D"; // 39821 in hex
-    const SEPOLIA_CHAIN_ID_HEX = "0xaa36a7"; // 11155111 in hex
+    const OMNI_CHAIN_ID_HEX = "0x9B8D";
+    const SEPOLIA_CHAIN_ID_HEX = "0xaa36a7";
     const OMNI_CHAIN_ID = 39821n;
     const SEPOLIA_CHAIN_ID = 11155111n;
 
-    // Pinned CDN URLs for MetaMask Branding (Commit 921e9a8)
     const NETWORK_LOGO_URL = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-network-icon-256.png";
     const TOKEN_LOGO_URL = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png";
 
-    let currentDirection = "ETH_TO_OMNI"; // or OMNI_TO_ETH
+    // --- Supported Multi-Asset Registry on OMNI Network (Chain 39821) ---
+    const OMNI_TOKENS = {
+      OMNI: {
+        symbol: "OMNI",
+        name: "OMNI Token",
+        address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        decimals: 18,
+        priceUsd: "1.00",
+        icon: "omni-logo-256.png",
+        type: "erc20"
+      },
+      NATIVE: {
+        symbol: "OMNI (Gas)",
+        name: "Native Gas Coin",
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+        priceUsd: "1.00",
+        icon: "omni-logo-256.png",
+        type: "native"
+      },
+      USDC: {
+        symbol: "USDC",
+        name: "USD Coin",
+        address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+        decimals: 6,
+        priceUsd: "1.00",
+        icon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=035",
+        type: "erc20"
+      },
+      USDT: {
+        symbol: "USDT",
+        name: "Tether USD",
+        address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+        decimals: 6,
+        priceUsd: "1.00",
+        icon: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=035",
+        type: "erc20"
+      },
+      WETH: {
+        symbol: "WETH",
+        name: "Ethereum (WETH)",
+        address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+        decimals: 18,
+        priceUsd: "3,450.00",
+        icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=035",
+        type: "erc20"
+      },
+      WBTC: {
+        symbol: "WBTC",
+        name: "Wrapped Bitcoin",
+        address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+        decimals: 8,
+        priceUsd: "62,500.00",
+        icon: "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=035",
+        type: "erc20"
+      },
+      WOMNI: {
+        symbol: "WOMNI",
+        name: "Wrapped Native OMNI",
+        address: "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726",
+        decimals: 18,
+        priceUsd: "1.00",
+        icon: "omni-logo-256.png",
+        type: "wrapper"
+      },
+      sOMNI: {
+        symbol: "sOMNI",
+        name: "Staked OMNI (18.5% APY)",
+        address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+        decimals: 18,
+        priceUsd: "1.05",
+        icon: "somni-token-icon.png",
+        type: "erc20"
+      }
+    };
+
+    // User State
+    let selectedInKey = "USDC";
+    let selectedOutKey = "OMNI";
+    let modalTarget = "in";
+    let wrapMode = "deposit";
+    let tokenBalances = {};
+
     let provider = null;
     let signer = null;
     let userAddress = null;
     let currentChainId = null;
 
-    // Valuation / Quote
-    const OMNI_PER_ETH = 30000; 
+    const erc20Abi = [
+      "function approve(address spender, uint256 amount) external returns (bool)",
+      "function allowance(address owner, address spender) external view returns (uint256)",
+      "function balanceOf(address account) external view returns (uint256)",
+      "function decimals() external view returns (uint8)",
+      "function transfer(address to, uint256 amount) external returns (bool)"
+    ];
+    const routerAbi = [
+      "function pools(address, address) view returns (uint256 reserveA, uint256 reserveB, bool exists)",
+      "function getAmountOut(address tokenIn, address tokenOut, uint256 amountIn) view returns (uint256 amountOut, uint256 feeAmount)",
+      "function swap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external returns (uint256)",
+      "function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) external"
+    ];
+    const womniAbi = [
+      "function deposit() payable",
+      "function withdraw(uint256 wad)",
+      "function balanceOf(address) view returns (uint256)"
+    ];
 
-    function calculateQuote() {
-      const inVal = parseFloat(document.getElementById('inputAmount').value) || 0;
-      const isOmniNetwork = (currentChainId === OMNI_CHAIN_ID);
+    function sortTokens(a, b) {
+      return BigInt(a) < BigInt(b) ? [a, b] : [b, a];
+    }
 
-      if (isOmniNetwork) {
-        if (currentDirection === "ETH_TO_OMNI") {
-          // OMNI to USDT (Pool ratio: 1 OMNI = 1.00 USDT)
-          const out = inVal * 1.00;
-          document.getElementById('outputAmount').value = out.toFixed(4);
-          document.getElementById('rateDisplay').innerText = "1 OMNI = 1.00 USDT ($1.00)";
-        } else {
-          // USDT to OMNI
-          const out = inVal / 1.00;
-          document.getElementById('outputAmount').value = out.toFixed(2);
-          document.getElementById('rateDisplay').innerText = "1 USDT = 1.00 OMNI";
-        }
+    // --- UI Helpers ---
+    function setPairPreset(inKey, outKey) {
+      selectedInKey = inKey;
+      selectedOutKey = outKey;
+      updateTokenPills();
+      calculateQuote();
+      updateBalances();
+    }
+
+    function toggleDirection() {
+      const temp = selectedInKey;
+      selectedInKey = selectedOutKey;
+      selectedOutKey = temp;
+      updateTokenPills();
+      calculateQuote();
+      updateBalances();
+    }
+
+    function updateTokenPills() {
+      const inToken = OMNI_TOKENS[selectedInKey] || OMNI_TOKENS.USDC;
+      const outToken = OMNI_TOKENS[selectedOutKey] || OMNI_TOKENS.OMNI;
+
+      document.getElementById('inputSymbol').innerText = inToken.symbol;
+      document.getElementById('inputTokenIcon').src = inToken.icon;
+
+      document.getElementById('outputSymbol').innerText = outToken.symbol;
+      document.getElementById('outputTokenIcon').src = outToken.icon;
+
+      const isOmni = (currentChainId === OMNI_CHAIN_ID);
+      const btn = document.getElementById('btnAction');
+      if (!isOmni) {
+        btn.innerText = "Swap on Uniswap V3";
+        document.getElementById('linkUniswapDirect').style.display = "inline-flex";
+        document.getElementById('routerDisplay').innerText = "Uniswap V3 (Sepolia 0.3%)";
       } else {
-        if (currentDirection === "ETH_TO_OMNI") {
-          const out = inVal * OMNI_PER_ETH;
-          document.getElementById('outputAmount').value = out.toFixed(2);
-          document.getElementById('rateDisplay').innerText = "1 OMNI ≈ 0.00003333 ETH ($0.10)";
+        document.getElementById('linkUniswapDirect').style.display = "none";
+        document.getElementById('routerDisplay').innerText = "OmniSwapRouter (Chain 39821)";
+        if (selectedInKey === 'NATIVE' && selectedOutKey === 'WOMNI') {
+          btn.innerText = "Deposit & Wrap Native OMNI";
+        } else if (selectedInKey === 'WOMNI' && selectedOutKey === 'NATIVE') {
+          btn.innerText = "Withdraw to Native Gas OMNI";
         } else {
-          const out = inVal / OMNI_PER_ETH;
-          document.getElementById('outputAmount').value = out.toFixed(6);
-          document.getElementById('rateDisplay').innerText = "1 ETH ≈ 30,000 OMNI";
+          btn.innerText = `Swap ${inToken.symbol} ➔ ${outToken.symbol}`;
         }
       }
     }
 
-    function toggleDirection() {
-      currentDirection = (currentDirection === "ETH_TO_OMNI") ? "OMNI_TO_ETH" : "ETH_TO_OMNI";
-      const isOmni = (currentChainId === OMNI_CHAIN_ID);
+    // --- Token Selector Modal ---
+    function openTokenModal(target) {
+      modalTarget = target;
+      document.getElementById('tokenSearchInput').value = "";
+      renderTokenModalList();
+      document.getElementById('tokenModal').style.display = "flex";
+    }
 
-      if (isOmni) {
-        document.getElementById('inputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "OMNI" : "USDT";
-        document.getElementById('outputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "USDT" : "OMNI";
-      } else {
-        document.getElementById('inputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "ETH" : "OMNI";
-        document.getElementById('outputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "OMNI" : "ETH";
+    function closeTokenModal() {
+      document.getElementById('tokenModal').style.display = "none";
+    }
+
+    function filterTokenList() {
+      const query = document.getElementById('tokenSearchInput').value.toLowerCase().trim();
+      renderTokenModalList(query);
+    }
+
+    function renderTokenModalList(query = "") {
+      const container = document.getElementById('tokenModalList');
+      container.innerHTML = "";
+
+      for (const [key, token] of Object.entries(OMNI_TOKENS)) {
+        if (query) {
+          const matchName = token.name.toLowerCase().includes(query);
+          const matchSym = token.symbol.toLowerCase().includes(query);
+          const matchAddr = token.address.toLowerCase().includes(query);
+          if (!matchName && !matchSym && !matchAddr) continue;
+        }
+
+        const bal = tokenBalances[key] || "0.0";
+        const row = document.createElement('div');
+        row.className = "token-item-row";
+        row.onclick = () => selectTokenFromModal(key);
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="${token.icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #000; border: 1px solid rgba(255,255,255,0.1);">
+            <div>
+              <div style="font-weight: 700; color: #fff; font-size: 14px;">${token.symbol}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${token.name} • $${token.priceUsd}</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-family: 'JetBrains Mono'; font-size: 13px; font-weight: 700; color: #fff;">${bal}</div>
+            <div style="font-size: 10px; color: var(--text-muted);">${token.type === 'native' ? 'Gas Token' : 'ERC-20'}</div>
+          </div>
+        `;
+        container.appendChild(row);
       }
+    }
+
+    function selectTokenFromModal(key) {
+      if (modalTarget === 'in') {
+        if (key === selectedOutKey) {
+          selectedOutKey = selectedInKey;
+        }
+        selectedInKey = key;
+      } else {
+        if (key === selectedInKey) {
+          selectedInKey = selectedOutKey;
+        }
+        selectedOutKey = key;
+      }
+      closeTokenModal();
+      updateTokenPills();
       calculateQuote();
       updateBalances();
+    }
+
+    // --- On-Chain Quote Calculation ---
+    async function calculateQuote() {
+      const inVal = parseFloat(document.getElementById('inputAmount').value) || 0;
+      if (inVal <= 0) {
+        document.getElementById('outputAmount').value = "0.0";
+        return;
+      }
+
+      const isOmni = (currentChainId === OMNI_CHAIN_ID);
+      const inToken = OMNI_TOKENS[selectedInKey] || OMNI_TOKENS.USDC;
+      const outToken = OMNI_TOKENS[selectedOutKey] || OMNI_TOKENS.OMNI;
+
+      if (!isOmni) {
+        // Fallback Uniswap Sepolia calculation
+        const OMNI_PER_ETH = 30000;
+        if (selectedInKey === 'WETH' || selectedInKey === 'NATIVE') {
+          const out = inVal * OMNI_PER_ETH;
+          document.getElementById('outputAmount').value = out.toFixed(2);
+          document.getElementById('rateDisplay').innerText = `1 ETH ≈ 30,000 OMNI ($0.10)`;
+        } else {
+          const out = inVal / OMNI_PER_ETH;
+          document.getElementById('outputAmount').value = out.toFixed(6);
+          document.getElementById('rateDisplay').innerText = `1 OMNI ≈ 0.00003333 ETH`;
+        }
+        return;
+      }
+
+      // If wrapping or unwrapping Native <-> WOMNI
+      if ((selectedInKey === 'NATIVE' && selectedOutKey === 'WOMNI') || 
+          (selectedInKey === 'WOMNI' && selectedOutKey === 'NATIVE')) {
+        document.getElementById('outputAmount').value = inVal.toFixed(4);
+        document.getElementById('rateDisplay').innerText = `1 ${inToken.symbol} = 1.00 ${outToken.symbol} (1:1 Peg)`;
+        return;
+      }
+
+      // Map Native to WOMNI address for pool lookup
+      const tokenInAddr = (inToken.type === 'native') ? OMNI_TOKENS.WOMNI.address : inToken.address;
+      const tokenOutAddr = (outToken.type === 'native') ? OMNI_TOKENS.WOMNI.address : outToken.address;
+
+      if (tokenInAddr === tokenOutAddr) {
+        document.getElementById('outputAmount').value = inVal.toFixed(4);
+        document.getElementById('rateDisplay').innerText = `1 ${inToken.symbol} = 1.00 ${outToken.symbol}`;
+        return;
+      }
+
+      try {
+        const readProvider = provider || new ethers.JsonRpcProvider("https://omni-rpc-gateway-853859261845.us-central1.run.app");
+        const router = new ethers.Contract(OMNI_DEX_ROUTER, routerAbi, readProvider);
+        const [t0, t1] = sortTokens(tokenInAddr, tokenOutAddr);
+        const pool = await router.pools(t0, t1);
+
+        if (pool.exists && pool.reserveA > 0n && pool.reserveB > 0n) {
+          const parsedIn = ethers.parseUnits(inVal.toString(), inToken.decimals);
+          const [expectedOut, fee] = await router.getAmountOut(tokenInAddr, tokenOutAddr, parsedIn);
+          const outFmt = ethers.formatUnits(expectedOut, outToken.decimals);
+          const numOut = parseFloat(outFmt);
+          document.getElementById('outputAmount').value = numOut.toFixed(outToken.decimals <= 8 ? outToken.decimals : 4);
+
+          const rate = numOut / inVal;
+          document.getElementById('rateDisplay').innerText = `1 ${inToken.symbol} ≈ ${rate.toFixed(4)} ${outToken.symbol} (0.3% Fee)`;
+        } else {
+          // Mathematical ratio based on USD values
+          const pIn = parseFloat(inToken.priceUsd.replace(/,/g, ''));
+          const pOut = parseFloat(outToken.priceUsd.replace(/,/g, ''));
+          const estOut = (inVal * pIn) / pOut;
+          document.getElementById('outputAmount').value = estOut.toFixed(outToken.decimals <= 8 ? outToken.decimals : 4);
+          document.getElementById('rateDisplay').innerText = `1 ${inToken.symbol} ≈ ${(pIn / pOut).toFixed(4)} ${outToken.symbol} (Target Valuation)`;
+        }
+      } catch (err) {
+        console.warn("Quote calculation error:", err);
+      }
+    }
+
+    // --- Multi-Token Balances Loader ---
+    async function updateBalances() {
+      if (!provider || !userAddress) return;
+      try {
+        const net = await provider.getNetwork();
+        currentChainId = net.chainId;
+        const isOmni = (currentChainId === OMNI_CHAIN_ID);
+
+        const badge = document.getElementById('activeNetworkBadge');
+        const netBtn = document.getElementById('btnSwitchNetwork');
+
+        if (isOmni) {
+          badge.innerText = "🟢 OMNI Network (39821) | Gas: Native OMNI";
+          badge.style.borderColor = "rgba(0, 253, 151, 0.4)";
+          badge.style.color = "#00FD97";
+          netBtn.innerHTML = "<span>🦄 Switch to Sepolia</span>";
+
+          // Fetch Native OMNI balance
+          const nativeBal = await provider.getBalance(userAddress);
+          tokenBalances['NATIVE'] = parseFloat(ethers.formatEther(nativeBal)).toFixed(4);
+
+          // Fetch ERC-20 balances
+          for (const [key, token] of Object.entries(OMNI_TOKENS)) {
+            if (token.type === 'native') continue;
+            try {
+              const contract = new ethers.Contract(token.address, erc20Abi, provider);
+              const b = await contract.balanceOf(userAddress);
+              tokenBalances[key] = parseFloat(ethers.formatUnits(b, token.decimals)).toLocaleString(undefined, { maximumFractionDigits: 4 });
+            } catch(e) {
+              tokenBalances[key] = "0.0";
+            }
+          }
+
+          // Update Swap Box Balances
+          const inToken = OMNI_TOKENS[selectedInKey];
+          const outToken = OMNI_TOKENS[selectedOutKey];
+          document.getElementById('inBalance').innerText = `Bal: ${tokenBalances[selectedInKey] || '0.0'} ${inToken.symbol}`;
+          document.getElementById('outBalance').innerText = `Bal: ${tokenBalances[selectedOutKey] || '0.0'} ${outToken.symbol}`;
+
+          // Update Wrap Tab Balances
+          if (document.getElementById('wrapNativeBal')) {
+            document.getElementById('wrapNativeBal').innerText = `${tokenBalances['NATIVE']} OMNI`;
+            document.getElementById('wrapWomniBal').innerText = `${tokenBalances['WOMNI'] || '0.0'} WOMNI`;
+            updateWrapUI();
+          }
+
+          // Update Send tab
+          if (document.getElementById('sendWalletBalDisplay')) {
+            document.getElementById('sendWalletBalDisplay').innerText = `${tokenBalances['NATIVE']} OMNI (Native Gas)`;
+          }
+          if (document.getElementById('sendAvailableBal')) {
+            document.getElementById('sendAvailableBal').innerText = `${tokenBalances['NATIVE']} OMNI`;
+          }
+
+          renderTokensTab();
+        } else {
+          badge.innerText = "🟡 Sepolia Testnet (11155111) | Uniswap V3";
+          badge.style.borderColor = "rgba(168, 85, 247, 0.4)";
+          badge.style.color = "#c084fc";
+          netBtn.innerHTML = "<span>🌐 Switch to OMNI Network</span>";
+
+          const ethBal = await provider.getBalance(userAddress);
+          document.getElementById('inBalance').innerText = `Bal: ${parseFloat(ethers.formatEther(ethBal)).toFixed(4)} ETH`;
+          document.getElementById('outBalance').innerText = "Bal: -- OMNI";
+        }
+
+        if (document.getElementById('receiveAddressDisplay')) {
+          document.getElementById('receiveAddressDisplay').innerText = userAddress;
+        }
+        updateTokenPills();
+        calculateQuote();
+      } catch (e) {
+        console.error("Error updating balances:", e);
+      }
+    }
+
+    // --- Render Tokens Tab Table ---
+    function renderTokensTab() {
+      const container = document.getElementById('tokensTableContainer');
+      if (!container) return;
+      container.innerHTML = "";
+
+      for (const [key, token] of Object.entries(OMNI_TOKENS)) {
+        const bal = tokenBalances[key] || "0.0";
+        const shortAddr = token.type === 'native' ? "Native Coin (Gas)" : `${token.address.slice(0, 6)}...${token.address.slice(-4)}`;
+
+        const card = document.createElement('div');
+        card.style.cssText = "background: rgba(8, 6, 18, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;";
+        card.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="${token.icon}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 1px solid rgba(255,255,255,0.15);">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-weight: 700; color: #fff; font-size: 15px;">${token.symbol}</span>
+                <span style="font-size: 11px; color: var(--accent-cyan); font-weight: 600;">$${token.priceUsd}</span>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono'; margin-top: 2px;">
+                ${shortAddr}
+                ${token.type !== 'native' ? `<button onclick="copyText('${token.address}')" style="background:none; border:none; color:var(--accent-purple); cursor:pointer; font-size:11px; margin-left:4px;">📋</button>` : ''}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="text-align: right; margin-right: 4px;">
+              <div style="font-family: 'JetBrains Mono'; font-size: 14px; font-weight: 700; color: #fff;">${bal}</div>
+              <div style="font-size: 10px; color: var(--text-muted);">${token.name}</div>
+            </div>
+            ${token.type !== 'native' ? `
+              <button class="btn-token-action" onclick="addTokenToMetaMaskBySymbol('${key}')" title="Add to MetaMask Assets">
+                🦊 + MetaMask
+              </button>
+            ` : ''}
+            <button class="btn-token-action" style="background: rgba(6,182,212,0.2); border-color: rgba(6,182,212,0.4); color: var(--accent-cyan);" onclick="setPairPreset('${key}', 'OMNI'); switchCardTab('swap');">
+              Trade
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    // --- Tab Switching ---
+    function switchCardTab(tabName) {
+      document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+      const map = {
+        swap: ['tabSwapBtn', 'tabSwap'],
+        wrap: ['tabWrapBtn', 'tabWrap'],
+        tokens: ['tabTokensBtn', 'tabTokens'],
+        liquidity: ['tabLiquidityBtn', 'tabLiquidity'],
+        bridge: ['tabBridgeBtn', 'tabBridge'],
+        send: ['tabSendBtn', 'tabSend'],
+        receive: ['tabReceiveBtn', 'tabReceive']
+      };
+
+      if (map[tabName]) {
+        const [btnId, paneId] = map[tabName];
+        if (document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+        if (document.getElementById(paneId)) document.getElementById(paneId).classList.add('active');
+      }
+      updateBalances();
+    }
+
+    // --- Wrap / Gas Manager Logic ---
+    function setWrapMode(mode) {
+      wrapMode = mode;
+      document.getElementById('btnModeDeposit').classList.toggle('active', mode === 'deposit');
+      document.getElementById('btnModeWithdraw').classList.toggle('active', mode === 'withdraw');
+      updateWrapUI();
+    }
+
+    function updateWrapUI() {
+      if (wrapMode === 'deposit') {
+        document.getElementById('wrapInputLabel').innerText = "Deposit Native OMNI (Wrap to WOMNI)";
+        document.getElementById('wrapAvailableBal').innerText = `${tokenBalances['NATIVE'] || '0.0'} OMNI`;
+        document.getElementById('wrapTokenSymbol').innerText = "OMNI";
+        document.getElementById('btnWrapAction').innerText = "⚡ Deposit & Wrap Native OMNI";
+      } else {
+        document.getElementById('wrapInputLabel').innerText = "Withdraw WOMNI (Unwrap to Gas Token)";
+        document.getElementById('wrapAvailableBal').innerText = `${tokenBalances['WOMNI'] || '0.0'} WOMNI`;
+        document.getElementById('wrapTokenSymbol').innerText = "WOMNI";
+        document.getElementById('btnWrapAction').innerText = "⚡ Withdraw to Native Gas OMNI";
+      }
+    }
+
+    function setMaxWrap() {
+      if (wrapMode === 'deposit') {
+        const n = parseFloat(tokenBalances['NATIVE'] || "0");
+        document.getElementById('wrapAmount').value = Math.max(0, n - 0.05).toFixed(4); // keep small gas reserve
+      } else {
+        document.getElementById('wrapAmount').value = parseFloat(tokenBalances['WOMNI'] || "0").toFixed(4);
+      }
+    }
+
+    async function executeWrapOrWithdraw() {
+      if (!signer || !userAddress) {
+        await connectWallet();
+        if (!signer) return;
+      }
+      const val = parseFloat(document.getElementById('wrapAmount').value) || 0;
+      if (val <= 0) {
+        alert("Please enter a valid amount");
+        return;
+      }
+
+      const btn = document.getElementById('btnWrapAction');
+      const origText = btn.innerText;
+      try {
+        const womniContract = new ethers.Contract(OMNI_TOKENS.WOMNI.address, womniAbi, signer);
+
+        if (wrapMode === 'deposit') {
+          btn.innerText = "Confirm Deposit in MetaMask...";
+          const tx = await womniContract.deposit({ value: ethers.parseEther(val.toString()) });
+          btn.innerText = "Wrapping Native OMNI...";
+          await tx.wait();
+          alert(`🎉 Successfully Wrapped ${val} Native OMNI into WOMNI (1:1 Ratio)!`);
+        } else {
+          btn.innerText = "Confirm Withdrawal in MetaMask...";
+          const tx = await womniContract.withdraw(ethers.parseEther(val.toString()));
+          btn.innerText = "Unwrapping to Gas Token...";
+          await tx.wait();
+          alert(`🎉 Successfully Unwrapped ${val} WOMNI into Native OMNI! Gas coin is in your wallet to pay for transactions.`);
+        }
+        btn.innerText = origText;
+        updateBalances();
+      } catch (err) {
+        console.error(err);
+        btn.innerText = origText;
+        if (err.code === 4001 || (err.message && err.message.includes("user rejected"))) {
+          alert("❌ Action canceled in MetaMask.");
+        } else {
+          alert("❌ Error: " + (err.reason || err.message));
+        }
+      }
+    }
+
+    // --- Swap Execution ---
+    async function executeSwap() {
+      if (!signer) {
+        await connectWallet();
+        if (!signer) return;
+      }
+      const inVal = parseFloat(document.getElementById('inputAmount').value) || 0;
+      if (inVal <= 0) {
+        alert("Please enter a valid swap amount");
+        return;
+      }
+
+      const isOmni = (currentChainId === OMNI_CHAIN_ID);
+      const btn = document.getElementById('btnAction');
+      const origText = btn.innerText;
+
+      if (isOmni) {
+        try {
+          const inToken = OMNI_TOKENS[selectedInKey];
+          const outToken = OMNI_TOKENS[selectedOutKey];
+
+          // 1. Direct Wrap / Unwrap check
+          if (selectedInKey === 'NATIVE' && selectedOutKey === 'WOMNI') {
+            btn.innerText = "Wrapping Native OMNI...";
+            const womniContract = new ethers.Contract(OMNI_TOKENS.WOMNI.address, womniAbi, signer);
+            const tx = await womniContract.deposit({ value: ethers.parseEther(inVal.toString()) });
+            await tx.wait();
+            alert(`🎉 Wrapped ${inVal} Native OMNI to WOMNI!`);
+            btn.innerText = origText;
+            updateBalances();
+            return;
+          }
+          if (selectedInKey === 'WOMNI' && selectedOutKey === 'NATIVE') {
+            btn.innerText = "Unwrapping to Native Gas...";
+            const womniContract = new ethers.Contract(OMNI_TOKENS.WOMNI.address, womniAbi, signer);
+            const tx = await womniContract.withdraw(ethers.parseEther(inVal.toString()));
+            await tx.wait();
+            alert(`🎉 Unwrapped ${inVal} WOMNI to Native OMNI Gas Coin!`);
+            btn.innerText = origText;
+            updateBalances();
+            return;
+          }
+
+          // 2. Prepare tokens and amounts
+          btn.innerText = "Preparing Swap Route...";
+          const router = new ethers.Contract(OMNI_DEX_ROUTER, routerAbi, signer);
+
+          let effectiveInAddr = inToken.address;
+          let effectiveOutAddr = outToken.address;
+
+          // If In is Native OMNI: auto-wrap to WOMNI first
+          if (inToken.type === 'native') {
+            btn.innerText = "Depositing Native OMNI to WOMNI...";
+            const womniContract = new ethers.Contract(OMNI_TOKENS.WOMNI.address, womniAbi, signer);
+            const wrapTx = await womniContract.deposit({ value: ethers.parseEther(inVal.toString()) });
+            await wrapTx.wait();
+            effectiveInAddr = OMNI_TOKENS.WOMNI.address;
+          }
+
+          // If Out is Native OMNI: route to WOMNI, then auto-unwrap
+          const unwrapAfter = (outToken.type === 'native');
+          if (unwrapAfter) {
+            effectiveOutAddr = OMNI_TOKENS.WOMNI.address;
+          }
+
+          const parsedIn = ethers.parseUnits(inVal.toString(), inToken.decimals);
+          const inContract = new ethers.Contract(effectiveInAddr, erc20Abi, signer);
+
+          // Check user balance
+          const bal = await inContract.balanceOf(userAddress);
+          if (bal < parsedIn) {
+            alert(`Insufficient ${inToken.symbol} balance! Use the 1-Click Faucet in the Tokens tab.`);
+            btn.innerText = origText;
+            return;
+          }
+
+          // Check allowance
+          const allowance = await inContract.allowance(userAddress, OMNI_DEX_ROUTER);
+          if (allowance < parsedIn) {
+            btn.innerText = "Confirm Token Approval in MetaMask...";
+            const appTx = await inContract.approve(OMNI_DEX_ROUTER, ethers.MaxUint256);
+            btn.innerText = "Awaiting Approval Confirmation...";
+            await appTx.wait();
+          }
+
+          // Query on-chain pool
+          btn.innerText = "Querying AMM Pool Reserves...";
+          const [expectedOut] = await router.getAmountOut(effectiveInAddr, effectiveOutAddr, parsedIn);
+          const minOut = (expectedOut * 95n) / 100n; // 5% slippage tolerance
+
+          btn.innerText = "Confirm Swap in MetaMask...";
+          const swapTx = await router.swap(effectiveInAddr, effectiveOutAddr, parsedIn, minOut);
+          btn.innerText = "Executing On-Chain Swap...";
+          const receipt = await swapTx.wait();
+
+          // Auto-unwrap to Native Gas if requested
+          if (unwrapAfter) {
+            btn.innerText = "Unwrapping to Native Gas Coin...";
+            const womniContract = new ethers.Contract(OMNI_TOKENS.WOMNI.address, womniAbi, signer);
+            const unwrapTx = await womniContract.withdraw(expectedOut);
+            await unwrapTx.wait();
+          }
+
+          alert(`🎉 Real On-Chain Swap Executed on OMNI Network!
+
+Tx Hash: ${receipt.hash}
+Output Received: ${ethers.formatUnits(expectedOut, outToken.decimals)} ${outToken.symbol}
+Gas paid in Native OMNI!`);
+          btn.innerText = origText;
+          updateBalances();
+        } catch (err) {
+          console.error("OMNI Swap Error:", err);
+          btn.innerText = origText;
+          if (err.code === 4001 || (err.message && err.message.includes("user rejected"))) {
+            alert("❌ Swap canceled by user in MetaMask.");
+          } else {
+            alert("❌ Swap Error: " + (err.reason || err.shortMessage || err.message));
+          }
+        }
+      } else {
+        // Sepolia Uniswap V3 execution
+        const routerAbi = [
+          "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)"
+        ];
+        const router = new ethers.Contract(ROUTER_SEPOLIA, routerAbi, signer);
+        const amountIn = ethers.parseEther(inVal.toString());
+
+        try {
+          btn.innerText = "Confirming in MetaMask...";
+          const tx = await router.exactInputSingle({
+            tokenIn: WETH_SEPOLIA,
+            tokenOut: OMNI_TOKEN_SEPOLIA,
+            fee: 3000,
+            recipient: userAddress,
+            amountIn: amountIn,
+            amountOutMinimum: 0,
+            sqrtPriceLimitX96: 0
+          }, { value: amountIn });
+
+          btn.innerText = "Swapping on Uniswap V3...";
+          const receipt = await tx.wait();
+          alert(`🎉 Swap Confirmed on Sepolia!
+Tx Hash: ${receipt.hash}`);
+          btn.innerText = origText;
+          updateBalances();
+        } catch (err) {
+          console.error(err);
+          btn.innerText = origText;
+          alert("Swap error: " + (err.reason || err.message));
+        }
+      }
+    }
+
+    // --- Add Liquidity Execution ---
+    async function executeAddLiquidity() {
+      if (!signer || !userAddress) {
+        await connectWallet();
+        if (!signer) return;
+      }
+      const amtOmni = parseFloat(document.getElementById('lpAmountOmni').value) || 0;
+      const amtUsdt = parseFloat(document.getElementById('lpAmountUsdt').value) || 0;
+      if (amtOmni <= 0 || amtUsdt <= 0) {
+        alert("Please enter valid amounts for both OMNI and USDT!");
+        return;
+      }
+
+      const btn = document.getElementById('btnAddLiquidityBtn');
+      const origText = btn.innerText;
+      try {
+        btn.innerText = "Approving Tokens...";
+        const router = new ethers.Contract(OMNI_DEX_ROUTER, routerAbi, signer);
+        const omni = new ethers.Contract(OMNI_TOKENS.OMNI.address, erc20Abi, signer);
+        const usdt = new ethers.Contract(OMNI_TOKENS.USDT.address, erc20Abi, signer);
+
+        const parsedOmni = ethers.parseEther(amtOmni.toString());
+        const parsedUsdt = ethers.parseUnits(amtUsdt.toString(), 6);
+
+        await (await omni.approve(OMNI_DEX_ROUTER, parsedOmni)).wait();
+        await (await usdt.approve(OMNI_DEX_ROUTER, parsedUsdt)).wait();
+
+        btn.innerText = "Depositing Liquidity...";
+        const tx = await router.addLiquidity(OMNI_TOKENS.OMNI.address, OMNI_TOKENS.USDT.address, parsedOmni, parsedUsdt);
+        await tx.wait();
+
+        alert(`🎉 Liquidity Added to OMNI Network AMM!
+
+Deposited: ${amtOmni} OMNI + ${amtUsdt} USDT
+You are now earning 0.3% fees on all trades.`);
+        btn.innerText = origText;
+        updateBalances();
+      } catch (err) {
+        console.error(err);
+        btn.innerText = origText;
+        alert("Add Liquidity error: " + (err.reason || err.message));
+      }
+    }
+
+    // --- 1-Click Multi-Asset Faucet ---
+    async function claimSwapFaucet() {
+      if (!userAddress) {
+        await connectWallet();
+        if (!userAddress) return;
+      }
+
+      try {
+        let rpcUrl = "http://localhost:8545";
+        try {
+          await fetch(rpcUrl, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({jsonrpc:"2.0",method:"eth_chainId",params:[],id:1}) });
+        } catch(e) {
+          rpcUrl = "https://omni-rpc-gateway-853859261845.us-central1.run.app";
+        }
+
+        const localProvider = new ethers.JsonRpcProvider(rpcUrl);
+        const deployer = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', localProvider);
+        let currentNonce = await localProvider.getTransactionCount(deployer.address, 'pending');
+
+        // 1. Send 50 Native OMNI for gas
+        const gasTx = await deployer.sendTransaction({
+          to: userAddress,
+          value: ethers.parseEther("50.0"),
+          nonce: currentNonce++
+        });
+        await gasTx.wait();
+
+        // 2. Send 100 OMNI (ERC-20)
+        const omniContract = new ethers.Contract(OMNI_TOKENS.OMNI.address, erc20Abi, deployer);
+        const t1 = await omniContract.transfer(userAddress, ethers.parseEther("100.0"), { nonce: currentNonce++ });
+        await t1.wait();
+
+        // 3. Send 100 USDC
+        const usdcContract = new ethers.Contract(OMNI_TOKENS.USDC.address, erc20Abi, deployer);
+        const t2 = await usdcContract.transfer(userAddress, ethers.parseUnits("100.0", 6), { nonce: currentNonce++ });
+        await t2.wait();
+
+        // 4. Send 100 USDT
+        const usdtContract = new ethers.Contract(OMNI_TOKENS.USDT.address, erc20Abi, deployer);
+        const t3 = await usdtContract.transfer(userAddress, ethers.parseUnits("100.0", 6), { nonce: currentNonce++ });
+        await t3.wait();
+
+        // 5. Send 0.10 WETH (ETH)
+        const wethContract = new ethers.Contract(OMNI_TOKENS.WETH.address, erc20Abi, deployer);
+        const t4 = await wethContract.transfer(userAddress, ethers.parseUnits("0.1", 18), { nonce: currentNonce++ });
+        await t4.wait();
+
+        // 6. Send 0.005 WBTC
+        const wbtcContract = new ethers.Contract(OMNI_TOKENS.WBTC.address, erc20Abi, deployer);
+        const t5 = await wbtcContract.transfer(userAddress, ethers.parseUnits("0.005", 8), { nonce: currentNonce++ });
+        await t5.wait();
+
+        alert(`🎉 Mega-Faucet Dispatched on OMNI Network!
+
+Dispatched to: ${userAddress}
+- 50.00 Native OMNI (Gas)
+- 100.00 ERC-20 OMNI ($100)
+- 100.00 USDC ($100)
+- 100.00 USDT ($100)
+- 0.10 WETH (ETH, ~$345)
+- 0.005 WBTC (~$312)
+
+All balances updated!`);
+        updateBalances();
+      } catch (err) {
+        console.error("Faucet error:", err);
+        alert("Faucet claim failed: " + (err.reason || err.message));
+      }
+    }
+
+    // --- Add Tokens to MetaMask (EIP-747) ---
+    async function addTokenToMetaMaskBySymbol(symbol) {
+      const token = OMNI_TOKENS[symbol];
+      if (!token || !window.ethereum) {
+        alert("MetaMask not detected!");
+        return;
+      }
+      try {
+        const iconUrl = token.icon.startsWith("http") ? token.icon : `${window.location.origin}/${token.icon}`;
+        const wasAdded = await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: token.address,
+              symbol: token.symbol,
+              decimals: token.decimals,
+              image: iconUrl
+            }
+          }
+        });
+        if (wasAdded) {
+          alert(`🎉 ${token.symbol} added to MetaMask!`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Could not add token: " + err.message);
+      }
+    }
+
+    async function addTokenToMetaMask() {
+      addTokenToMetaMaskBySymbol('OMNI');
+    }
+
+    async function addOmniNetworkToMetaMask() {
+      if (!window.ethereum) {
+        alert("MetaMask not detected! Please install MetaMask to add OMNI Network.");
+        return;
+      }
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: OMNI_CHAIN_ID_HEX,
+            chainName: 'OMNI Network',
+            nativeCurrency: {
+              name: 'OMNI',
+              symbol: 'OMNI',
+              decimals: 18
+            },
+            rpcUrls: ['https://omni-rpc-gateway-853859261845.us-central1.run.app', 'http://127.0.0.1:8545'],
+            iconUrls: [NETWORK_LOGO_URL]
+          }]
+        });
+        alert(`🎉 OMNI Network added to MetaMask!
+
+Connected to Public HTTPS RPC Gateway (Cloud Run)!
+Chain ID: 39821
+Currency: OMNI`);
+      } catch (error) {
+        console.error(error);
+        alert("Error adding OMNI Network to MetaMask: " + error.message);
+      }
     }
 
     async function toggleNetwork() {
@@ -1115,13 +2073,11 @@
       }
       try {
         if (currentChainId === OMNI_CHAIN_ID) {
-          // Switch to Sepolia
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: SEPOLIA_CHAIN_ID_HEX }]
           });
         } else {
-          // Switch to OMNI Network (or add if missing)
           try {
             await window.ethereum.request({
               method: "wallet_switchEthereumChain",
@@ -1137,7 +2093,6 @@
         }
       } catch (e) {
         console.error("Network toggle error:", e);
-        alert(e.message || "Failed to switch network");
       }
     }
 
@@ -1156,10 +2111,7 @@
           document.getElementById('walletBalDisplay').innerText = "Connected";
           updateBalances();
 
-          // Listen to chain changes
-          window.ethereum.on('chainChanged', () => {
-            window.location.reload();
-          });
+          window.ethereum.on('chainChanged', () => window.location.reload());
           window.ethereum.on('accountsChanged', (accs) => {
             if (accs.length === 0) window.location.reload();
             else {
@@ -1175,378 +2127,74 @@
       }
     }
 
-    async function updateBalances() {
-      if (!provider || !userAddress) return;
+    function setMaxSend() {
+      document.getElementById('sendAmount').value = tokenBalances['NATIVE'] || "50.0";
+    }
+
+    async function sendOmniToken() {
+      if (!signer || !userAddress) {
+        await connectWallet();
+        if (!signer) return;
+      }
+      const to = document.getElementById('sendRecipient').value.trim();
+      const amt = document.getElementById('sendAmount').value.trim();
+      if (!to || !ethers.isAddress(to)) {
+        alert("Please enter a valid recipient 0x Ethereum address!");
+        return;
+      }
+      if (!amt || parseFloat(amt) <= 0) {
+        alert("Please enter a valid OMNI amount to send!");
+        return;
+      }
+
+      const btn = document.getElementById('btnSendAction');
       try {
+        btn.innerText = "Confirm in MetaMask...";
         const net = await provider.getNetwork();
-        currentChainId = net.chainId;
-        const isOmni = (currentChainId === OMNI_CHAIN_ID);
 
-        const badge = document.getElementById('activeNetworkBadge');
-        const netBtn = document.getElementById('btnSwitchNetwork');
-
-        if (isOmni) {
-          badge.innerText = "🟢 OMNI Network (39821) | Native Gas: OMNI";
-          badge.style.borderColor = "rgba(0, 253, 151, 0.4)";
-          badge.style.color = "#00FD97";
-          netBtn.innerHTML = "<span>🦄 Switch to Sepolia (Uniswap)</span>";
-
-          // On OMNI Network: native balance is OMNI, plus check ERC20 OMNI and USDT
-          const nativeBal = await provider.getBalance(userAddress);
-          const nativeFmt = parseFloat(ethers.formatEther(nativeBal)).toLocaleString();
-
-          const erc20Abi = ["function balanceOf(address) view returns (uint256)"];
-          const omniErc20 = new ethers.Contract(OMNI_TOKEN_LOCAL, erc20Abi, provider);
-          const usdtContract = new ethers.Contract(USDT_TOKEN_LOCAL, erc20Abi, provider);
-
-          let omniErcBal = 0n;
-          let usdtBal = 0n;
-          try {
-            omniErcBal = await omniErc20.balanceOf(userAddress);
-            usdtBal = await usdtContract.balanceOf(userAddress);
-          } catch(e) {}
-
-          const omniErcFmt = parseFloat(ethers.formatEther(omniErcBal)).toLocaleString();
-          const usdtFmt = parseFloat(ethers.formatUnits(usdtBal, 6)).toLocaleString();
-
-          if (currentDirection === "ETH_TO_OMNI") {
-            document.getElementById('inBalance').innerText = `Bal: ${omniErcFmt} OMNI (${nativeFmt} Gas)`;
-            document.getElementById('outBalance').innerText = `Bal: ${usdtFmt} USDT`;
-            document.getElementById('inputSymbol').innerText = "OMNI";
-            document.getElementById('outputSymbol').innerText = "USDT";
-          } else {
-            document.getElementById('inBalance').innerText = `Bal: ${usdtFmt} USDT`;
-            document.getElementById('outBalance').innerText = `Bal: ${omniErcFmt} OMNI`;
-            document.getElementById('inputSymbol').innerText = "USDT";
-            document.getElementById('outputSymbol').innerText = "OMNI";
-          }
-
-          if (document.getElementById('sendWalletBalDisplay')) {
-            document.getElementById('sendWalletBalDisplay').innerText = `${nativeFmt} OMNI (Native Gas)`;
-          }
-          if (document.getElementById('sendAvailableBal')) {
-            document.getElementById('sendAvailableBal').innerText = `${nativeFmt} OMNI`;
-          }
-          window.userOmniRawBalance = ethers.formatEther(nativeBal);
-          document.getElementById('btnAction').innerText = "Swap on OMNI DEX";
+        if (net.chainId === OMNI_CHAIN_ID) {
+          const tx = await signer.sendTransaction({
+            to: to,
+            value: ethers.parseEther(amt)
+          });
+          btn.innerText = "Broadcasting Native Transaction...";
+          await tx.wait();
+          alert(`🎉 Successfully sent ${amt} Native OMNI on OMNI Network!
+Tx Hash: ${tx.hash}`);
         } else {
-          badge.innerText = "🟡 Sepolia Testnet (11155111) | Uniswap V3";
-          badge.style.borderColor = "rgba(168, 85, 247, 0.4)";
-          badge.style.color = "#c084fc";
-          netBtn.innerHTML = "<span>🌐 Switch to OMNI Network (39821)</span>";
-
-          const ethBal = await provider.getBalance(userAddress);
-          const omniAbi = ["function balanceOf(address) view returns (uint256)"];
-          const omniContract = new ethers.Contract(OMNI_TOKEN_SEPOLIA, omniAbi, provider);
-          const omniBal = await omniContract.balanceOf(userAddress);
-
-          const ethFmt = parseFloat(ethers.formatEther(ethBal)).toFixed(4);
-          const omniFmt = parseFloat(ethers.formatEther(omniBal)).toLocaleString();
-
-          if (currentDirection === "ETH_TO_OMNI") {
-            document.getElementById('inBalance').innerText = `Balance: ${ethFmt} ETH`;
-            document.getElementById('outBalance').innerText = `Balance: ${omniFmt} OMNI`;
-            document.getElementById('inputSymbol').innerText = "ETH";
-            document.getElementById('outputSymbol').innerText = "OMNI";
-          } else {
-            document.getElementById('inBalance').innerText = `Balance: ${omniFmt} OMNI`;
-            document.getElementById('outBalance').innerText = `Balance: ${ethFmt} ETH`;
-            document.getElementById('inputSymbol').innerText = "OMNI";
-            document.getElementById('outputSymbol').innerText = "ETH";
-          }
-
-          if (document.getElementById('sendWalletBalDisplay')) {
-            document.getElementById('sendWalletBalDisplay').innerText = `${omniFmt} OMNI`;
-          }
-          if (document.getElementById('sendAvailableBal')) {
-            document.getElementById('sendAvailableBal').innerText = `${omniFmt} OMNI`;
-          }
-          window.userOmniRawBalance = ethers.formatEther(omniBal);
-          document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
+          const omniAbi = ["function transfer(address to, uint256 amount) external returns (bool)"];
+          const omniContract = new ethers.Contract(OMNI_TOKEN_SEPOLIA, omniAbi, signer);
+          const parsedAmt = ethers.parseEther(amt);
+          const tx = await omniContract.transfer(to, parsedAmt);
+          btn.innerText = "Broadcasting Transaction...";
+          await tx.wait();
+          alert(`🎉 Successfully sent ${amt} OMNI to ${to.slice(0, 6)}...${to.slice(-4)}!
+Tx Hash: ${tx.hash}`);
         }
 
-        if (document.getElementById('receiveAddressDisplay')) {
-          document.getElementById('receiveAddressDisplay').innerText = userAddress;
-        }
-        calculateQuote();
-      } catch (e) {
-        console.error("Error updating balances:", e);
-      }
-    }
-
-    async function executeSwap() {
-      if (!signer) {
-        await connectWallet();
-        return;
-      }
-      const inVal = parseFloat(document.getElementById('inputAmount').value) || 0;
-      if (inVal <= 0) {
-        alert("Please enter a valid swap amount");
-        return;
-      }
-
-      const isOmni = (currentChainId === OMNI_CHAIN_ID);
-      const btn = document.getElementById('btnAction');
-      const origText = btn.innerText;
-
-      if (isOmni) {
-        // Execute Real AMM Swap on OMNI Network (Chain 39821)
-        try {
-          btn.innerText = "Checking on-chain pool reserves...";
-          const erc20Abi = [
-            "function approve(address spender, uint256 amount) external returns (bool)",
-            "function allowance(address owner, address spender) external view returns (uint256)",
-            "function balanceOf(address account) external view returns (uint256)",
-            "function decimals() external view returns (uint8)"
-          ];
-          const routerAbi = [
-            "function getAmountOut(address tokenIn, address tokenOut, uint256 amountIn) view returns (uint256 amountOut, uint256 feeAmount)",
-            "function swap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external returns (uint256)"
-          ];
-
-          const router = new ethers.Contract(OMNI_DEX_ROUTER, routerAbi, signer);
-
-          let tokenInAddr, tokenOutAddr, inDecimals, outDecimals;
-          if (currentDirection === "ETH_TO_OMNI") {
-            // OMNI to USDT
-            tokenInAddr = OMNI_TOKEN_LOCAL;
-            tokenOutAddr = USDT_TOKEN_LOCAL;
-            inDecimals = 18;
-            outDecimals = 6;
-          } else {
-            // USDT to OMNI
-            tokenInAddr = USDT_TOKEN_LOCAL;
-            tokenOutAddr = OMNI_TOKEN_LOCAL;
-            inDecimals = 6;
-            outDecimals = 18;
-          }
-
-          const parsedIn = ethers.parseUnits(inVal.toString(), inDecimals);
-          const tokenInContract = new ethers.Contract(tokenInAddr, erc20Abi, signer);
-          const userBal = await tokenInContract.balanceOf(userAddress);
-          if (userBal < parsedIn) {
-            alert(`Insufficient token balance! You have ${ethers.formatUnits(userBal, inDecimals)}. Use the 1-Click Faucet in the Liquidity tab to get test tokens!`);
-            btn.innerText = origText;
-            return;
-          }
-
-          // Check allowance
-          const allowance = await tokenInContract.allowance(userAddress, OMNI_DEX_ROUTER);
-          if (allowance < parsedIn) {
-            btn.innerText = "Confirm Approval in MetaMask...";
-            const appTx = await tokenInContract.approve(OMNI_DEX_ROUTER, ethers.MaxUint256);
-            btn.innerText = "Awaiting Approval Confirmation...";
-            await appTx.wait();
-          }
-
-          // Query on-chain quote
-          const [expectedOut, fee] = await router.getAmountOut(tokenInAddr, tokenOutAddr, parsedIn);
-          const minOut = (expectedOut * 95n) / 100n; // 5% slippage tolerance
-
-          btn.innerText = "Confirm Swap in MetaMask...";
-          const swapTx = await router.swap(tokenInAddr, tokenOutAddr, parsedIn, minOut);
-          btn.innerText = "Broadcasting Swap to OMNI Chain...";
-          const receipt = await swapTx.wait();
-
-          alert(`🎉 Real On-Chain Swap Executed on OMNI Network!\n\nTx Hash: ${receipt.hash}\nBlock Number: ${receipt.blockNumber}\nOutput Received: ${ethers.formatUnits(expectedOut, outDecimals)}`);
-          btn.innerText = origText;
-          updateBalances();
-        } catch (err) {
-          console.error("OMNI Swap Error:", err);
-          if (err.code === 4001 || (err.message && err.message.includes("user rejected"))) {
-            alert("❌ Swap canceled by user in MetaMask.");
-          } else {
-            alert("❌ Swap Error: " + (err.reason || err.shortMessage || err.message));
-          }
-          btn.innerText = origText;
-        }
-      } else {
-        if (currentDirection === "ETH_TO_OMNI") {
-          // Swap ETH for OMNI via Uniswap V3 SwapRouter on Sepolia
-          const routerAbi = [
-            "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)"
-          ];
-          const router = new ethers.Contract(ROUTER_SEPOLIA, routerAbi, signer);
-          const amountIn = ethers.parseEther(inVal.toString());
-
-          try {
-            btn.innerText = "Confirming in MetaMask...";
-            const tx = await router.exactInputSingle({
-              tokenIn: WETH_SEPOLIA,
-              tokenOut: OMNI_TOKEN_SEPOLIA,
-              fee: 3000,
-              recipient: userAddress,
-              amountIn: amountIn,
-              amountOutMinimum: 0,
-              sqrtPriceLimitX96: 0
-            }, { value: amountIn });
-
-            btn.innerText = "Broadcasting Swap...";
-            await tx.wait();
-            alert("🎉 Swap Confirmed on Sepolia! Check your MetaMask OMNI balance.");
-            btn.innerText = origText;
-            updateBalances();
-          } catch (err) {
-            console.error(err);
-            alert("Swap error: " + (err.reason || err.message));
-            btn.innerText = origText;
-          }
-        } else {
-          window.open(`https://app.uniswap.org/swap?chain=sepolia&inputCurrency=${OMNI_TOKEN_SEPOLIA}&outputCurrency=ETH`, "_blank");
-        }
-      }
-    }
-
-    async function executeAddLiquidity() {
-      if (!signer) {
-        await connectWallet();
-        return;
-      }
-      if (currentChainId !== OMNI_CHAIN_ID) {
-        alert("Please switch MetaMask to OMNI Network (Chain 39821) to add liquidity to native AMM pools.");
-        return;
-      }
-
-      const omniAmt = parseFloat(document.getElementById('lpAmountOmni').value) || 0;
-      const usdtAmt = parseFloat(document.getElementById('lpAmountUsdt').value) || 0;
-
-      if (omniAmt <= 0 || usdtAmt <= 0) {
-        alert("Please enter valid amounts for both OMNI and USDT.");
-        return;
-      }
-
-      const btn = document.getElementById('btnAddLiquidityBtn');
-      const origText = btn.innerText;
-
-      try {
-        btn.innerText = "Checking token allowances...";
-        const erc20Abi = [
-          "function approve(address spender, uint256 amount) external returns (bool)",
-          "function allowance(address owner, address spender) external view returns (uint256)",
-          "function balanceOf(address account) external view returns (uint256)"
-        ];
-        const routerAbi = [
-          "function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) external"
-        ];
-
-        const omniContract = new ethers.Contract(OMNI_TOKEN_LOCAL, erc20Abi, signer);
-        const usdtContract = new ethers.Contract(USDT_TOKEN_LOCAL, erc20Abi, signer);
-        const routerContract = new ethers.Contract(OMNI_DEX_ROUTER, routerAbi, signer);
-
-        const parsedOmni = ethers.parseEther(omniAmt.toString());
-        const parsedUsdt = ethers.parseUnits(usdtAmt.toString(), 6);
-
-        // Check balances
-        const balOmni = await omniContract.balanceOf(userAddress);
-        const balUsdt = await usdtContract.balanceOf(userAddress);
-        if (balOmni < parsedOmni) {
-          alert(`Insufficient OMNI token balance! You have ${ethers.formatEther(balOmni)}. Use the 1-Click Faucet below.`);
-          btn.innerText = origText;
-          return;
-        }
-        if (balUsdt < parsedUsdt) {
-          alert(`Insufficient USDT balance! You have ${ethers.formatUnits(balUsdt, 6)}. Use the 1-Click Faucet below.`);
-          btn.innerText = origText;
-          return;
-        }
-
-        // Approve OMNI
-        const allowOmni = await omniContract.allowance(userAddress, OMNI_DEX_ROUTER);
-        if (allowOmni < parsedOmni) {
-          btn.innerText = "Confirm OMNI Approval in MetaMask...";
-          const tx1 = await omniContract.approve(OMNI_DEX_ROUTER, ethers.MaxUint256);
-          await tx1.wait();
-        }
-
-        // Approve USDT
-        const allowUsdt = await usdtContract.allowance(userAddress, OMNI_DEX_ROUTER);
-        if (allowUsdt < parsedUsdt) {
-          btn.innerText = "Confirm USDT Approval in MetaMask...";
-          const tx2 = await usdtContract.approve(OMNI_DEX_ROUTER, ethers.MaxUint256);
-          await tx2.wait();
-        }
-
-        // Add Liquidity
-        btn.innerText = "Confirm Liquidity Deposit in MetaMask...";
-        const lpTx = await routerContract.addLiquidity(OMNI_TOKEN_LOCAL, USDT_TOKEN_LOCAL, parsedOmni, parsedUsdt);
-        btn.innerText = "Broadcasting Deposit to Blockchain...";
-        const receipt = await lpTx.wait();
-
-        alert(`🎉 Liquidity Successfully Deposited on OMNI Network!\n\nDeposited: ${omniAmt} OMNI + ${usdtAmt} USDT\nPool: USDT/OMNI (Chain 39821)\nTx Hash: ${receipt.hash}\nBlock: ${receipt.blockNumber}\nYou are now earning 0.3% of all swaps!`);
-        btn.innerText = origText;
+        btn.innerText = "Send OMNI";
+        document.getElementById('sendAmount').value = "";
         updateBalances();
       } catch (err) {
-        console.error("Add Liquidity error:", err);
-        if (err.code === 4001 || (err.message && err.message.includes("user rejected"))) {
-          alert("❌ Liquidity deposit canceled in MetaMask.");
-        } else {
-          alert("❌ Liquidity Deposit Error: " + (err.reason || err.shortMessage || err.message));
-        }
-        btn.innerText = origText;
+        console.error(err);
+        alert("Send error: " + (err.reason || err.message));
+        btn.innerText = "Send OMNI";
       }
     }
 
-    async function claimSwapFaucet() {
+    function copyReceiveAddress() {
       if (!userAddress) {
-        await connectWallet();
-        if (!userAddress) return;
+        alert("Please connect your wallet first!");
+        connectWallet();
+        return;
       }
-      try {
-        const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
-        const deployer = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', localProvider);
-        let currentNonce = await localProvider.getTransactionCount(deployer.address, 'pending');
-
-        // 1. Send Native OMNI gas
-        const gasTx = await deployer.sendTransaction({
-          to: userAddress,
-          value: ethers.parseEther("50.0"),
-          nonce: currentNonce++
-        });
-        await gasTx.wait();
-
-        // 2. Send ERC-20 OMNI
-        const omniContract = new ethers.Contract(OMNI_TOKEN_LOCAL, [
-          "function transfer(address,uint256) returns (bool)"
-        ], deployer);
-        const t1 = await omniContract.transfer(userAddress, ethers.parseEther("100.0"), { nonce: currentNonce++ });
-        await t1.wait();
-
-        // 3. Send USDT
-        const usdtContract = new ethers.Contract(USDT_TOKEN_LOCAL, [
-          "function transfer(address,uint256) returns (bool)"
-        ], deployer);
-        const t2 = await usdtContract.transfer(userAddress, ethers.parseUnits("100.0", 6), { nonce: currentNonce++ });
-        await t2.wait();
-
-        alert(`🎉 Faucet Claim Confirmed on OMNI Network!\n\nDispatched to: ${userAddress}\n- 50.00 Native OMNI (Gas)\n- 100.00 ERC-20 OMNI\n- 100.00 USDT\n\nBalances updated!`);
-        updateBalances();
-      } catch (err) {
-        console.error("Faucet error:", err);
-        alert("Faucet claim failed: " + (err.reason || err.message));
-      }
+      navigator.clipboard.writeText(userAddress);
+      alert("🎉 Copied your wallet address to clipboard:\n" + userAddress);
     }
 
-    function switchCardTab(tabName) {
-      document.querySelectorAll('.card-tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-
-      if (tabName === 'swap') {
-        document.getElementById('tabSwapBtn').classList.add('active');
-        document.getElementById('tabSwap').classList.add('active');
-      } else if (tabName === 'liquidity') {
-        document.getElementById('tabLiquidityBtn').classList.add('active');
-        document.getElementById('tabLiquidity').classList.add('active');
-      } else if (tabName === 'bridge') {
-        document.getElementById('tabBridgeBtn').classList.add('active');
-        document.getElementById('tabBridge').classList.add('active');
-      } else if (tabName === 'send') {
-        document.getElementById('tabSendBtn').classList.add('active');
-        document.getElementById('tabSend').classList.add('active');
-      } else if (tabName === 'receive') {
-        document.getElementById('tabReceiveBtn').classList.add('active');
-        document.getElementById('tabReceive').classList.add('active');
-      }
-      updateBalances();
+    function copyText(val) {
+      navigator.clipboard.writeText(val);
+      alert("Copied to clipboard: " + val);
     }
 
     async function executeBridgeTransfer() {
@@ -1576,7 +2224,6 @@
         const conf = confirm(`Initiate Omnichain Bridge Transfer?\n\nAmount: ${amt} OMNI\nFrom: ${netNames[fromNet]}\nTo: ${netNames[toNet]}\nBridge Fee: 0.5%\nEst. Arrival: ~12 seconds\n\nClick OK to authorize in MetaMask.`);
         if (!conf) return;
 
-        // Simulate bridge lock & relay confirmation
         alert(`🌉 Bridge Transfer Initiated!\n\n1. Tokens locked on ${netNames[fromNet]}.\n2. Cross-chain relayer verifying state root.\n3. Releasing ${amt * 0.995} OMNI to: ${userAddress} on ${netNames[toNet]}.\n\nTx Hash: 0x${Array.from({length:64}, () => Math.floor(Math.random()*16).toString(16)).join('')}`);
       } catch (err) {
         console.error(err);
@@ -1584,141 +2231,29 @@
       }
     }
 
-    function setMaxSend() {
-      if (window.userOmniRawBalance) {
-        document.getElementById('sendAmount').value = window.userOmniRawBalance;
-      } else {
-        document.getElementById('sendAmount').value = "500000";
-      }
-    }
-
-    async function sendOmniToken() {
-      if (!signer || !userAddress) {
-        await connectWallet();
-        if (!signer) return;
-      }
-      const to = document.getElementById('sendRecipient').value.trim();
-      const amt = document.getElementById('sendAmount').value.trim();
-      if (!to || !ethers.isAddress(to)) {
-        alert("Please enter a valid recipient 0x Ethereum address!");
-        return;
-      }
-      if (!amt || parseFloat(amt) <= 0) {
-        alert("Please enter a valid OMNI amount to send!");
-        return;
-      }
-
-      const btn = document.getElementById('btnSendAction');
-      try {
-        btn.innerText = "Confirm in MetaMask...";
-        const net = await provider.getNetwork();
-
-        if (net.chainId === OMNI_CHAIN_ID) {
-          // On OMNI Network: send native OMNI (gas is paid in OMNI)
-          const tx = await signer.sendTransaction({
-            to: to,
-            value: ethers.parseEther(amt)
-          });
-          btn.innerText = "Broadcasting Native Transaction...";
-          await tx.wait();
-          alert(`🎉 Successfully sent ${amt} Native OMNI on OMNI Network!\nTx Hash: ${tx.hash}`);
-        } else {
-          // On Sepolia: ERC-20 transfer
-          const omniAbi = ["function transfer(address to, uint256 amount) external returns (bool)"];
-          const omniContract = new ethers.Contract(OMNI_TOKEN_SEPOLIA, omniAbi, signer);
-          const parsedAmt = ethers.parseEther(amt);
-          const tx = await omniContract.transfer(to, parsedAmt);
-          btn.innerText = "Broadcasting Transaction...";
-          await tx.wait();
-          alert(`🎉 Successfully sent ${amt} OMNI to ${to.slice(0, 6)}...${to.slice(-4)}!\nTx Hash: ${tx.hash}`);
-        }
-
-        btn.innerText = "Send OMNI";
-        document.getElementById('sendAmount').value = "";
-        updateBalances();
-      } catch (err) {
-        console.error(err);
-        alert("Send error: " + (err.reason || err.message));
-        btn.innerText = "Send OMNI";
-      }
-    }
-
-    function copyReceiveAddress() {
-      if (!userAddress) {
-        alert("Please connect your wallet first!");
-        connectWallet();
-        return;
-      }
-      navigator.clipboard.writeText(userAddress);
-      alert("🎉 Copied your wallet address to clipboard:\n" + userAddress);
-    }
-
-    async function addTokenToMetaMask() {
-      if (!window.ethereum) {
-        alert("MetaMask not detected! Please open in a browser with MetaMask installed.");
-        return;
-      }
-      try {
-        const wasAdded = await window.ethereum.request({
-          method: 'wallet_watchAsset',
-          params: {
-            type: 'ERC20',
-            options: {
-              address: (currentChainId === OMNI_CHAIN_ID) ? "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44" : OMNI_TOKEN_SEPOLIA,
-              symbol: 'OMNI',
-              decimals: 18,
-              image: TOKEN_LOGO_URL,
-            },
-          },
-        });
-        if (wasAdded) {
-          alert("🎉 OMNI token with official Green Alien logo added to your MetaMask!");
-        }
-      } catch (error) {
-        console.error(error);
-        alert("Could not add token to MetaMask: " + error.message);
-      }
-    }
-
-    async function addOmniNetworkToMetaMask() {
-      if (!window.ethereum) {
-        alert("MetaMask not detected! Please install MetaMask to add OMNI Network.");
-        return;
-      }
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: OMNI_CHAIN_ID_HEX, // 0x9B8D (39821)
-            chainName: 'OMNI Network',
-            nativeCurrency: {
-              name: 'OMNI',
-              symbol: 'OMNI',
-              decimals: 18
-            },
-            rpcUrls: ['https://omni-rpc-gateway-853859261845.us-central1.run.app', 'http://127.0.0.1:8545'],
-            iconUrls: [NETWORK_LOGO_URL]
-          }]
-        });
-        alert("🎉 OMNI Network added to MetaMask!\n\nConnected to Public HTTPS RPC Gateway (Cloud Run)!\nChain ID: 39821\nCurrency: OMNI");
-      } catch (error) {
-        console.error(error);
-        alert("Error adding OMNI Network to MetaMask: " + error.message);
-      }
-    }
-
-    function copyText(val) {
-      navigator.clipboard.writeText(val);
-      alert("Copied to clipboard: " + val);
-    }
-
-    // Auto calculate on load
+    // Initial setup
+    updateTokenPills();
     calculateQuote();
+    renderTokensTab();
 
-    // Auto detect existing ethereum provider
     if (window.ethereum && window.ethereum.selectedAddress) {
       connectWallet();
     }
   </script>
+
+  <!-- Token Selector Modal -->
+  <div id="tokenModal" class="modal-backdrop-custom">
+    <div class="modal-card-custom">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div style="font-weight: 700; font-size: 18px; color: #fff;">Select a Token</div>
+        <button onclick="closeTokenModal()" style="background:none; border:none; color:var(--text-muted); font-size: 24px; cursor:pointer; padding:0; line-height:1;">&times;</button>
+      </div>
+      <input type="text" id="tokenSearchInput" placeholder="Search token name or symbol" oninput="filterTokenList()" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 14px; margin-bottom: 14px; box-sizing: border-box; outline: none;">
+      
+      <div id="tokenModalList" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>
