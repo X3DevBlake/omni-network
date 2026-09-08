@@ -1407,11 +1407,13 @@
       try {
         const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
         const deployer = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', localProvider);
+        let currentNonce = await localProvider.getTransactionCount(deployer.address, 'pending');
 
         // 1. Send Native OMNI gas
         const gasTx = await deployer.sendTransaction({
           to: userAddress,
-          value: ethers.parseEther("50.0")
+          value: ethers.parseEther("50.0"),
+          nonce: currentNonce++
         });
         await gasTx.wait();
 
@@ -1419,14 +1421,14 @@
         const omniContract = new ethers.Contract(OMNI_TOKEN_LOCAL, [
           "function transfer(address,uint256) returns (bool)"
         ], deployer);
-        const t1 = await omniContract.transfer(userAddress, ethers.parseEther("100.0"));
+        const t1 = await omniContract.transfer(userAddress, ethers.parseEther("100.0"), { nonce: currentNonce++ });
         await t1.wait();
 
         // 3. Send USDT
         const usdtContract = new ethers.Contract(USDT_TOKEN_LOCAL, [
           "function transfer(address,uint256) returns (bool)"
         ], deployer);
-        const t2 = await usdtContract.transfer(userAddress, ethers.parseUnits("100.0", 6));
+        const t2 = await usdtContract.transfer(userAddress, ethers.parseUnits("100.0", 6), { nonce: currentNonce++ });
         await t2.wait();
 
         alert(`🎉 Faucet Claim Confirmed on OMNI Network!\n\nDispatched to: ${userAddress}\n- 50.00 Native OMNI (Gas)\n- 100.00 ERC-20 OMNI\n- 100.00 USDT\n\nBalances updated!`);

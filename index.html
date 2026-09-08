@@ -1759,11 +1759,13 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";\n`;
       try {
         const localProvider = new ethers.JsonRpcProvider('http://localhost:8545');
         const deployerWallet = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', localProvider);
+        let currentNonce = await localProvider.getTransactionCount(deployerWallet.address, 'pending');
 
         // 1. Send Native OMNI for gas
         const gasTx = await deployerWallet.sendTransaction({
           to: recipient,
-          value: ethers.parseEther("50.0")
+          value: ethers.parseEther("50.0"),
+          nonce: currentNonce++
         });
         await gasTx.wait();
 
@@ -1774,7 +1776,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";\n`;
         const omniContract = new ethers.Contract(omniAddr, [
           "function transfer(address,uint256) returns (bool)"
         ], deployerWallet);
-        const tokenTx = await omniContract.transfer(recipient, ethers.parseEther("100.0"));
+        const tokenTx = await omniContract.transfer(recipient, ethers.parseEther("100.0"), { nonce: currentNonce++ });
         await tokenTx.wait();
 
         alert(`🎉 Faucet Dispatch Confirmed on OMNI Network!\n\nRecipient: ${recipient}\nNative Gas Sent: 50.00 OMNI\nERC-20 Tokens Sent: 100.00 OMNI\nGas Tx: ${gasTx.hash}\nToken Tx: ${tokenTx.hash}`);
