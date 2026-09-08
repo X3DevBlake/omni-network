@@ -1,0 +1,31 @@
+{
+  "network": "Base Sepolia",
+  "chainId": 39821,
+  "token": {
+    "address": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+    "name": "OMNI Token",
+    "symbol": "OMNI",
+    "decimals": 18,
+    "initialSupply": "1000000000"
+  },
+  "pair": {
+    "baseToken": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+    "quoteToken": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "feeTier": 3000,
+    "dexScreenerUrl": "https://dexscreener.com/base/0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+    "geckoTerminalUrl": "https://www.geckoterminal.com/base/pools/0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+    "uniswapSwapUrl": "https://app.uniswap.org/swap?chain=base&outputCurrency=0x36b58F5C1969B7b6591D752ea6F5486D069010AB"
+  },
+  "coinbaseOnramp": {
+    "enabled": true,
+    "supportedAssets": [
+      "USDC",
+      "ETH",
+      "OMNI"
+    ],
+    "network": "base",
+    "applePayEnabled": true,
+    "debitCardEnabled": true
+  },
+  "deployedAt": "2026-09-08T01:59:37.594Z"
+}

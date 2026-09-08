@@ -1,0 +1,38 @@
+{
+  "genesis": {
+    "l1": {
+      "hash": "0x4b7f0e64c3ba50c33a92543e33f67b848096f9bf1faef5d0a6a2a0a2df3fa32b",
+      "number": 6489201
+    },
+    "l2": {
+      "hash": "0x6f9b8d0000000000000000000000000000000000000000000000000000000001",
+      "number": 0
+    },
+    "l2_time": 1788800000,
+    "system_config": {
+      "batcherAddr": "0x981604a11fB40B5139031c2D34d3E11C47D83176",
+      "overhead": "0x00000000000000000000000000000000000000000000000000000000000000bc",
+      "scalar": "0x00000000000000000000000000000000000000000000000000000000000a6fe0",
+      "gasLimit": 30000000
+    }
+  },
+  "block_time": 1,
+  "max_sequencer_drift": 600,
+  "seq_window_size": 3600,
+  "channel_timeout": 300,
+  "l1_chain_id": 11155111,
+  "l2_chain_id": 39821,
+  "regolith_time": 0,
+  "canyon_time": 0,
+  "delta_time": 0,
+  "ecotone_time": 0,
+  "fjord_time": 0,
+  "batch_inbox_address": "0xff00000000000000000000000000000000039821",
+  "deposit_contract_address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "l1_system_config_address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "use_custom_gas_token": true,
+  "gas_token_address": "0x638a246f0ec8883ef68280293ffe8cfbabe61b44",
+  "gas_token_name": "OMNI Native Token",
+  "gas_token_symbol": "OMNI",
+  "gas_token_decimals": 18
+}

@@ -6,6 +6,7 @@
   <title>OMNI Network | Uniswap V3 Live DEX Swap Portal</title>
   <link rel="icon" type="image/png" href="omni-network-icon-256.png">
   <link rel="apple-touch-icon" href="omni-network-icon-256.png">
+  <script src="base-onramp-widget.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -919,6 +920,12 @@
       </div>
 
       <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px; margin-top: 16px;">
+        <!-- Base L2 Fiat Onramp Button -->
+        <button class="btn-onramp" onclick="openFiatOnrampModal()" style="display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:13px; margin-bottom:12px; border-radius:12px; background:linear-gradient(135deg, #0052FF 0%, #0036b3 100%); color:#fff; font-weight:700; border:1px solid rgba(255,255,255,0.2); cursor:pointer; font-size:14px; box-shadow:0 6px 20px rgba(0,82,255,0.35); transition:all 0.2s ease;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#fff"/><circle cx="12" cy="12" r="5" fill="#0052FF"/></svg>
+          <span>💳 Buy OMNI & USDC via Apple Pay / Debit Card (Base L2)</span>
+        </button>
+
         <button class="btn-metamask-add" onclick="addTokenToMetaMask()">
           <img src="omni-logo-256.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;" alt="Alien">
           <span>🦊 Add OMNI Token (Green Alien Logo) to MetaMask</span>
@@ -926,11 +933,14 @@
 
         <button class="btn-network-add" onclick="addOmniNetworkToMetaMask()">
           <img src="omni-network-icon-256.png" style="width: 20px; height: 20px; border-radius: 6px; object-fit: cover; background: #000;" alt="Diamond">
-          <span>🌐 Add OMNI Network (Diamond on Black Logo) to MetaMask</span>
+          <span>🌐 Connect OMNI Network (Public HTTPS RPC)</span>
         </button>
 
-        <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.5; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          💡 <strong>How to Refresh Logo in MetaMask:</strong> If you already added OMNI Network before, MetaMask caches the old icon. In MetaMask go to: <em>Settings → Networks → Click 'OMNI Network' → Delete</em>, then click the button above to add it fresh with the new Diamond on Black logo!
+        <div style="font-size: 11px; color: #94a3b8; text-align: left; margin-top: 12px; line-height: 1.6; background: rgba(15, 11, 30, 0.85); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(168,85,247,0.25);">
+          <div style="color: #00e5ff; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <span>🛡️</span> <strong>Why does MetaMask show the letter "O" in the top network switcher?</strong>
+          </div>
+          MetaMask's internal security code automatically renders the first letter (the <strong>"O"</strong> in OMNI Network) inside a circular badge for <em>all custom RPC networks</em> to prevent phishing. Your official <strong>Diamond on Black Logo</strong> is actively displayed across all dApp approval modals, signature prompts, and browser tabs, while the <strong>Green Alien Logo</strong> appears directly inside the <strong>Tokens</strong> tab!
         </div>
       </div>
 
@@ -1573,11 +1583,11 @@
               symbol: 'OMNI',
               decimals: 18
             },
-            rpcUrls: ['http://127.0.0.1:8545'],
+            rpcUrls: ['https://omni-rpc-gateway-853859261845.us-central1.run.app', 'http://127.0.0.1:8545'],
             iconUrls: [NETWORK_LOGO_URL]
           }]
         });
-        alert("🎉 OMNI Network with official Diamond on Black logo added to MetaMask!\n\nTIP: If you previously had OMNI Network in MetaMask, delete it first in Settings -> Networks to see the updated Diamond on Black icon immediately!");
+        alert("🎉 OMNI Network added to MetaMask!\n\nConnected to Public HTTPS RPC Gateway (Cloud Run)!\nChain ID: 39821\nCurrency: OMNI");
       } catch (error) {
         console.error(error);
         alert("Error adding OMNI Network to MetaMask: " + error.message);

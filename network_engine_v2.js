@@ -131,16 +131,16 @@ class OmniNetworkEngineV2 {
             chainId: '0x9B8D', // 39821 in hex
             chainName: 'OMNI Network',
             nativeCurrency: { name: 'OMNI', symbol: 'OMNI', decimals: 18 },
-            rpcUrls: ['http://127.0.0.1:8545'],
+            rpcUrls: ['https://omni-rpc-gateway-853859261845.us-central1.run.app', 'http://127.0.0.1:8545'],
             iconUrls: ['https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-network-icon-256.png']
           }]
         });
-        alert("🎉 OMNI Network successfully added to MetaMask!\n\nChain ID: 39821 (0x9B8D)\nRPC: http://127.0.0.1:8545\nCurrency: OMNI\nLogo: Diamond on Black");
+        alert("🎉 OMNI Network successfully added to MetaMask!\n\nChain ID: 39821 (0x9B8D)\nRPC: https://omni-rpc-gateway-853859261845.us-central1.run.app\nCurrency: OMNI\nLogo: Diamond on Black");
       } catch (error) {
         alert("Error configuring OMNI Network in MetaMask: " + error.message);
       }
     } else {
-      alert("Custom OMNI Network RPC Parameters:\n\nNetwork Name: OMNI Network\nChain ID: 39821 (0x9B8D)\nCurrency Symbol: OMNI\nRPC URL: http://127.0.0.1:8545\nLogo: Diamond on Black");
+      alert("Custom OMNI Network RPC Parameters:\n\nNetwork Name: OMNI Network\nChain ID: 39821 (0x9B8D)\nCurrency Symbol: OMNI\nRPC URL: https://omni-rpc-gateway-853859261845.us-central1.run.app\nLogo: Diamond on Black");
     }
   }
 
