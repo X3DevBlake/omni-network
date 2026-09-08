@@ -24,7 +24,21 @@
   "keywords": ["omni", "defi", "layer2", "metaverse", "swap"],
   "tokens": [
     {
+      "chainId": 11155111,
+      "address": "0x523fA2008402BD45590113A1f7aC13E5C7075Fff",
+      "name": "OMNI Network Token",
+      "symbol": "OMNI",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/omni-network/assets/main/omni-logo-256.png",
+      "tags": ["defi", "l2", "gaming"],
+      "extensions": {
+        "website": "http://localhost:8082",
+        "description": "Core utility and governance token of the OMNI decentralized ecosystem."
+      }
+    },
+    {
       "chainId": 8453,
+
       "address": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
       "name": "OMNI Network Token",
       "symbol": "OMNI",
