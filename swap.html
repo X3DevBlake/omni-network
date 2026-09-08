@@ -614,13 +614,16 @@
 
   <header>
     <div class="brand">
-      <img src="omni-network-icon-256.png" class="brand-logo" alt="OMNI Network" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 18px var(--glass-glow);">
+      <img src="omni-network-icon-256.png" class="brand-logo" alt="OMNI Network" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 18px rgba(0, 253, 151, 0.25); background: #000; border: 1px solid rgba(255,255,255,0.15);">
       <div>
         <div class="brand-title">OMNI Network DEX Portal</div>
-        <div class="network-badge">Sepolia Testnet (ID: 11155111) & OMNI Chain (39821)</div>
+        <div class="network-badge" id="activeNetworkBadge">Detecting Network...</div>
       </div>
     </div>
     <div class="header-actions">
+      <button id="btnSwitchNetwork" onclick="toggleNetwork()" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 10px 16px; border-radius: 12px; font-family: 'Outfit'; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <span>🌐 Switch Network</span>
+      </button>
       <button class="btn-connect" id="btnConnect" onclick="connectWallet()">Connect MetaMask</button>
     </div>
   </header>
@@ -832,9 +835,13 @@
         </button>
 
         <button class="btn-network-add" onclick="addOmniNetworkToMetaMask()">
-          <img src="omni-network-icon-256.png" style="width: 20px; height: 20px; border-radius: 6px; object-fit: cover;" alt="Diamond">
-          <span>🌐 Add OMNI Network (Diamond on Purple Logo) to MetaMask</span>
+          <img src="omni-network-icon-256.png" style="width: 20px; height: 20px; border-radius: 6px; object-fit: cover; background: #000;" alt="Diamond">
+          <span>🌐 Add OMNI Network (Diamond on Black Logo) to MetaMask</span>
         </button>
+
+        <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.5; background: rgba(0,0,0,0.35); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          💡 <strong>How to Refresh Logo in MetaMask:</strong> If you already added OMNI Network before, MetaMask caches the old icon. In MetaMask go to: <em>Settings → Networks → Click 'OMNI Network' → Delete</em>, then click the button above to add it fresh with the new Diamond on Black logo!
+        </div>
       </div>
 
     </div>
@@ -849,44 +856,111 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <script>
-    const OMNI_ADDRESS = "0x523fA2008402BD45590113A1f7aC13E5C7075Fff";
-    const WETH_ADDRESS = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14";
-    const POOL_ADDRESS = "0xDa0BDD5E1523CCd07a2207cbcD54f429F200B15e";
-    const ROUTER_ADDRESS = "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E"; // SwapRouter02
-    const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111
+    // Contracts on Sepolia (11155111)
+    const OMNI_TOKEN_SEPOLIA = "0x523fA2008402BD45590113A1f7aC13E5C7075Fff";
+    const WETH_SEPOLIA = "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14";
+    const POOL_SEPOLIA = "0xDa0BDD5E1523CCd07a2207cbcD54f429F200B15e";
+    const ROUTER_SEPOLIA = "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E"; // SwapRouter02
+
+    // Contracts on OMNI Network (39821)
+    const OMNI_DEX_ROUTER = "0x5D42EBdBBa61412295D7b0302d6F50aC449Ddb4F";
+    const OMNI_DEX_FACTORY = "0x870526b7973b56163a6997bB7C886F5E4EA53638";
+    const USDT_OMNI_CHAIN = "0xa6e99A4ED7498b3cdDCBB61a6A607a4925Faa1B7";
+
+    // Chain IDs
+    const OMNI_CHAIN_ID_HEX = "0x9B8D"; // 39821 in hex
+    const SEPOLIA_CHAIN_ID_HEX = "0xaa36a7"; // 11155111 in hex
+    const OMNI_CHAIN_ID = 39821n;
+    const SEPOLIA_CHAIN_ID = 11155111n;
+
+    // Pinned CDN URLs for MetaMask Branding (Commit 921e9a8)
+    const NETWORK_LOGO_URL = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-network-icon-256.png";
+    const TOKEN_LOGO_URL = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png";
 
     let currentDirection = "ETH_TO_OMNI"; // or OMNI_TO_ETH
     let provider = null;
     let signer = null;
     let userAddress = null;
+    let currentChainId = null;
 
-    // Rate: 1 OMNI = 0.0000333333 ETH ($0.10)
+    // Valuation / Quote: 1 OMNI = $0.10 USD
     const OMNI_PER_ETH = 30000; 
 
     function calculateQuote() {
       const inVal = parseFloat(document.getElementById('inputAmount').value) || 0;
-      if (currentDirection === "ETH_TO_OMNI") {
-        const out = inVal * OMNI_PER_ETH;
-        document.getElementById('outputAmount').value = out.toFixed(2);
-        document.getElementById('rateDisplay').innerText = "1 OMNI ≈ 0.00003333 ETH ($0.10)";
+      const isOmniNetwork = (currentChainId === OMNI_CHAIN_ID);
+
+      if (isOmniNetwork) {
+        if (currentDirection === "ETH_TO_OMNI") {
+          // OMNI to USDT
+          const out = inVal * 0.10;
+          document.getElementById('outputAmount').value = out.toFixed(4);
+          document.getElementById('rateDisplay').innerText = "1 OMNI = $0.10 USDT";
+        } else {
+          // USDT to OMNI
+          const out = inVal / 0.10;
+          document.getElementById('outputAmount').value = out.toFixed(2);
+          document.getElementById('rateDisplay').innerText = "1 USDT = 10 OMNI";
+        }
       } else {
-        const out = inVal / OMNI_PER_ETH;
-        document.getElementById('outputAmount').value = out.toFixed(6);
-        document.getElementById('rateDisplay').innerText = "1 ETH ≈ 30,000 OMNI";
+        if (currentDirection === "ETH_TO_OMNI") {
+          const out = inVal * OMNI_PER_ETH;
+          document.getElementById('outputAmount').value = out.toFixed(2);
+          document.getElementById('rateDisplay').innerText = "1 OMNI ≈ 0.00003333 ETH ($0.10)";
+        } else {
+          const out = inVal / OMNI_PER_ETH;
+          document.getElementById('outputAmount').value = out.toFixed(6);
+          document.getElementById('rateDisplay').innerText = "1 ETH ≈ 30,000 OMNI";
+        }
       }
     }
 
     function toggleDirection() {
       currentDirection = (currentDirection === "ETH_TO_OMNI") ? "OMNI_TO_ETH" : "ETH_TO_OMNI";
-      if (currentDirection === "ETH_TO_OMNI") {
-        document.getElementById('inputSymbol').innerText = "ETH";
-        document.getElementById('outputSymbol').innerText = "OMNI";
+      const isOmni = (currentChainId === OMNI_CHAIN_ID);
+
+      if (isOmni) {
+        document.getElementById('inputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "OMNI (Gas)" : "USDT";
+        document.getElementById('outputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "USDT" : "OMNI (Gas)";
       } else {
-        document.getElementById('inputSymbol').innerText = "OMNI";
-        document.getElementById('outputSymbol').innerText = "ETH";
+        document.getElementById('inputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "ETH" : "OMNI";
+        document.getElementById('outputSymbol').innerText = (currentDirection === "ETH_TO_OMNI") ? "OMNI" : "ETH";
       }
       calculateQuote();
       updateBalances();
+    }
+
+    async function toggleNetwork() {
+      if (!window.ethereum) {
+        alert("MetaMask not found!");
+        return;
+      }
+      try {
+        if (currentChainId === OMNI_CHAIN_ID) {
+          // Switch to Sepolia
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: SEPOLIA_CHAIN_ID_HEX }]
+          });
+        } else {
+          // Switch to OMNI Network (or add if missing)
+          try {
+            await window.ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: OMNI_CHAIN_ID_HEX }]
+            });
+          } catch (switchErr) {
+            if (switchErr.code === 4902) {
+              await addOmniNetworkToMetaMask();
+            } else {
+              throw switchErr;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Network toggle error:", e);
+        alert(e.message || "Failed to switch network");
+      }
     }
 
     async function connectWallet() {
@@ -897,22 +971,24 @@
           userAddress = accounts[0];
           signer = await provider.getSigner();
 
-          // Check network
-          const network = await provider.getNetwork();
-          if (network.chainId !== 11155111n) {
-            try {
-              await window.ethereum.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: SEPOLIA_CHAIN_ID }]
-              });
-            } catch (switchError) {
-              alert("Please switch MetaMask to Sepolia network to swap!");
-            }
-          }
+          const net = await provider.getNetwork();
+          currentChainId = net.chainId;
 
           document.getElementById('btnConnect').innerText = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
           document.getElementById('walletBalDisplay').innerText = "Connected";
           updateBalances();
+
+          // Listen to chain changes
+          window.ethereum.on('chainChanged', () => {
+            window.location.reload();
+          });
+          window.ethereum.on('accountsChanged', (accs) => {
+            if (accs.length === 0) window.location.reload();
+            else {
+              userAddress = accs[0];
+              updateBalances();
+            }
+          });
         } catch (err) {
           console.error(err);
         }
@@ -924,33 +1000,83 @@
     async function updateBalances() {
       if (!provider || !userAddress) return;
       try {
-        const ethBal = await provider.getBalance(userAddress);
-        const omniAbi = ["function balanceOf(address) view returns (uint256)"];
-        const omniContract = new ethers.Contract(OMNI_ADDRESS, omniAbi, provider);
-        const omniBal = await omniContract.balanceOf(userAddress);
+        const net = await provider.getNetwork();
+        currentChainId = net.chainId;
+        const isOmni = (currentChainId === OMNI_CHAIN_ID);
 
-        const ethFmt = parseFloat(ethers.formatEther(ethBal)).toFixed(4);
-        const omniFmt = parseFloat(ethers.formatEther(omniBal)).toLocaleString();
+        const badge = document.getElementById('activeNetworkBadge');
+        const netBtn = document.getElementById('btnSwitchNetwork');
 
-        if (currentDirection === "ETH_TO_OMNI") {
-          document.getElementById('inBalance').innerText = `Balance: ${ethFmt} ETH`;
-          document.getElementById('outBalance').innerText = `Balance: ${omniFmt} OMNI`;
+        if (isOmni) {
+          badge.innerText = "🟢 OMNI Network (39821) | Native Gas: OMNI";
+          badge.style.borderColor = "rgba(0, 253, 151, 0.4)";
+          badge.style.color = "#00FD97";
+          netBtn.innerHTML = "<span>🦄 Switch to Sepolia (Uniswap)</span>";
+
+          // On OMNI Network, native balance IS OMNI!
+          const nativeBal = await provider.getBalance(userAddress);
+          const omniFmt = parseFloat(ethers.formatEther(nativeBal)).toLocaleString();
+
+          if (currentDirection === "ETH_TO_OMNI") {
+            document.getElementById('inBalance').innerText = `Balance: ${omniFmt} OMNI (Native)`;
+            document.getElementById('outBalance').innerText = `Balance: -- USDT`;
+            document.getElementById('inputSymbol').innerText = "OMNI (Gas)";
+            document.getElementById('outputSymbol').innerText = "USDT";
+          } else {
+            document.getElementById('inBalance').innerText = `Balance: -- USDT`;
+            document.getElementById('outBalance').innerText = `Balance: ${omniFmt} OMNI (Native)`;
+            document.getElementById('inputSymbol').innerText = "USDT";
+            document.getElementById('outputSymbol').innerText = "OMNI (Gas)";
+          }
+
+          if (document.getElementById('sendWalletBalDisplay')) {
+            document.getElementById('sendWalletBalDisplay').innerText = `${omniFmt} OMNI (Native Gas)`;
+          }
+          if (document.getElementById('sendAvailableBal')) {
+            document.getElementById('sendAvailableBal').innerText = `${omniFmt} OMNI`;
+          }
+          window.userOmniRawBalance = ethers.formatEther(nativeBal);
+          document.getElementById('btnAction').innerText = "Swap on OMNI DEX";
         } else {
-          document.getElementById('inBalance').innerText = `Balance: ${omniFmt} OMNI`;
-          document.getElementById('outBalance').innerText = `Balance: ${ethFmt} ETH`;
+          badge.innerText = "🟡 Sepolia Testnet (11155111) | Uniswap V3";
+          badge.style.borderColor = "rgba(168, 85, 247, 0.4)";
+          badge.style.color = "#c084fc";
+          netBtn.innerHTML = "<span>🌐 Switch to OMNI Network (39821)</span>";
+
+          const ethBal = await provider.getBalance(userAddress);
+          const omniAbi = ["function balanceOf(address) view returns (uint256)"];
+          const omniContract = new ethers.Contract(OMNI_TOKEN_SEPOLIA, omniAbi, provider);
+          const omniBal = await omniContract.balanceOf(userAddress);
+
+          const ethFmt = parseFloat(ethers.formatEther(ethBal)).toFixed(4);
+          const omniFmt = parseFloat(ethers.formatEther(omniBal)).toLocaleString();
+
+          if (currentDirection === "ETH_TO_OMNI") {
+            document.getElementById('inBalance').innerText = `Balance: ${ethFmt} ETH`;
+            document.getElementById('outBalance').innerText = `Balance: ${omniFmt} OMNI`;
+            document.getElementById('inputSymbol').innerText = "ETH";
+            document.getElementById('outputSymbol').innerText = "OMNI";
+          } else {
+            document.getElementById('inBalance').innerText = `Balance: ${omniFmt} OMNI`;
+            document.getElementById('outBalance').innerText = `Balance: ${ethFmt} ETH`;
+            document.getElementById('inputSymbol').innerText = "OMNI";
+            document.getElementById('outputSymbol').innerText = "ETH";
+          }
+
+          if (document.getElementById('sendWalletBalDisplay')) {
+            document.getElementById('sendWalletBalDisplay').innerText = `${omniFmt} OMNI`;
+          }
+          if (document.getElementById('sendAvailableBal')) {
+            document.getElementById('sendAvailableBal').innerText = `${omniFmt} OMNI`;
+          }
+          window.userOmniRawBalance = ethers.formatEther(omniBal);
+          document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
         }
 
-        // Update Send and Receive tab displays
-        if (document.getElementById('sendWalletBalDisplay')) {
-          document.getElementById('sendWalletBalDisplay').innerText = `${omniFmt} OMNI`;
-        }
-        if (document.getElementById('sendAvailableBal')) {
-          document.getElementById('sendAvailableBal').innerText = `${omniFmt} OMNI`;
-        }
         if (document.getElementById('receiveAddressDisplay')) {
           document.getElementById('receiveAddressDisplay').innerText = userAddress;
         }
-        window.userOmniRawBalance = ethers.formatEther(omniBal);
+        calculateQuote();
       } catch (e) {
         console.error("Error updating balances:", e);
       }
@@ -967,39 +1093,44 @@
         return;
       }
 
-      if (currentDirection === "ETH_TO_OMNI") {
-        // Swap ETH for OMNI via Uniswap V3 SwapRouter
-        const routerAbi = [
-          "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)"
-        ];
-        const router = new ethers.Contract(ROUTER_ADDRESS, routerAbi, signer);
-        const amountIn = ethers.parseEther(inVal.toString());
+      const isOmni = (currentChainId === OMNI_CHAIN_ID);
 
-        try {
-          document.getElementById('btnAction').innerText = "Confirming in MetaMask...";
-          const tx = await router.exactInputSingle({
-            tokenIn: WETH_ADDRESS,
-            tokenOut: OMNI_ADDRESS,
-            fee: 3000,
-            recipient: userAddress,
-            amountIn: amountIn,
-            amountOutMinimum: 0,
-            sqrtPriceLimitX96: 0
-          }, { value: amountIn });
-
-          document.getElementById('btnAction').innerText = "Broadcasting Swap...";
-          await tx.wait();
-          alert("🎉 Swap Confirmed on Sepolia! Check your MetaMask OMNI balance.");
-          document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
-          updateBalances();
-        } catch (err) {
-          console.error(err);
-          alert("Swap error: " + (err.reason || err.message));
-          document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
-        }
+      if (isOmni) {
+        alert(`🚀 Executing OMNI DEX Swap on OMNI Network (Chain 39821). Valuation: 1 OMNI = $0.10 USDT.`);
       } else {
-        // Redirect to Uniswap for OMNI to ETH approval flow
-        window.open(`https://app.uniswap.org/swap?chain=sepolia&inputCurrency=${OMNI_ADDRESS}&outputCurrency=ETH`, "_blank");
+        if (currentDirection === "ETH_TO_OMNI") {
+          // Swap ETH for OMNI via Uniswap V3 SwapRouter on Sepolia
+          const routerAbi = [
+            "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)"
+          ];
+          const router = new ethers.Contract(ROUTER_SEPOLIA, routerAbi, signer);
+          const amountIn = ethers.parseEther(inVal.toString());
+
+          try {
+            document.getElementById('btnAction').innerText = "Confirming in MetaMask...";
+            const tx = await router.exactInputSingle({
+              tokenIn: WETH_SEPOLIA,
+              tokenOut: OMNI_TOKEN_SEPOLIA,
+              fee: 3000,
+              recipient: userAddress,
+              amountIn: amountIn,
+              amountOutMinimum: 0,
+              sqrtPriceLimitX96: 0
+            }, { value: amountIn });
+
+            document.getElementById('btnAction').innerText = "Broadcasting Swap...";
+            await tx.wait();
+            alert("🎉 Swap Confirmed on Sepolia! Check your MetaMask OMNI balance.");
+            document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
+            updateBalances();
+          } catch (err) {
+            console.error(err);
+            alert("Swap error: " + (err.reason || err.message));
+            document.getElementById('btnAction').innerText = "Swap on Uniswap V3";
+          }
+        } else {
+          window.open(`https://app.uniswap.org/swap?chain=sepolia&inputCurrency=${OMNI_TOKEN_SEPOLIA}&outputCurrency=ETH`, "_blank");
+        }
       }
     }
 
@@ -1024,7 +1155,7 @@
       if (window.userOmniRawBalance) {
         document.getElementById('sendAmount').value = window.userOmniRawBalance;
       } else {
-        document.getElementById('sendAmount').value = "491705.77";
+        document.getElementById('sendAmount').value = "500000";
       }
     }
 
@@ -1044,26 +1175,38 @@
         return;
       }
 
+      const btn = document.getElementById('btnSendAction');
       try {
-        const btn = document.getElementById('btnSendAction');
         btn.innerText = "Confirm in MetaMask...";
-        const omniAbi = [
-          "function transfer(address to, uint256 amount) external returns (bool)"
-        ];
-        const omniContract = new ethers.Contract(OMNI_ADDRESS, omniAbi, signer);
-        const parsedAmt = ethers.parseEther(amt);
+        const net = await provider.getNetwork();
 
-        const tx = await omniContract.transfer(to, parsedAmt);
-        btn.innerText = "Broadcasting Transaction...";
-        await tx.wait();
-        alert(`🎉 Successfully sent ${amt} OMNI to ${to.slice(0, 6)}...${to.slice(-4)}!`);
+        if (net.chainId === OMNI_CHAIN_ID) {
+          // On OMNI Network: send native OMNI (gas is paid in OMNI)
+          const tx = await signer.sendTransaction({
+            to: to,
+            value: ethers.parseEther(amt)
+          });
+          btn.innerText = "Broadcasting Native Transaction...";
+          await tx.wait();
+          alert(`🎉 Successfully sent ${amt} Native OMNI on OMNI Network!\nTx Hash: ${tx.hash}`);
+        } else {
+          // On Sepolia: ERC-20 transfer
+          const omniAbi = ["function transfer(address to, uint256 amount) external returns (bool)"];
+          const omniContract = new ethers.Contract(OMNI_TOKEN_SEPOLIA, omniAbi, signer);
+          const parsedAmt = ethers.parseEther(amt);
+          const tx = await omniContract.transfer(to, parsedAmt);
+          btn.innerText = "Broadcasting Transaction...";
+          await tx.wait();
+          alert(`🎉 Successfully sent ${amt} OMNI to ${to.slice(0, 6)}...${to.slice(-4)}!\nTx Hash: ${tx.hash}`);
+        }
+
         btn.innerText = "Send OMNI";
         document.getElementById('sendAmount').value = "";
         updateBalances();
       } catch (err) {
         console.error(err);
         alert("Send error: " + (err.reason || err.message));
-        document.getElementById('btnSendAction').innerText = "Send OMNI";
+        btn.innerText = "Send OMNI";
       }
     }
 
@@ -1088,10 +1231,10 @@
           params: {
             type: 'ERC20',
             options: {
-              address: OMNI_ADDRESS,
+              address: (currentChainId === OMNI_CHAIN_ID) ? "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44" : OMNI_TOKEN_SEPOLIA,
               symbol: 'OMNI',
               decimals: 18,
-              image: 'https://raw.githubusercontent.com/X3DevBlake/omni-network/6afa5a2/omni-logo-256.png',
+              image: TOKEN_LOGO_URL,
             },
           },
         });
@@ -1113,7 +1256,7 @@
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0x9B8D', // 39821 in hex
+            chainId: OMNI_CHAIN_ID_HEX, // 0x9B8D (39821)
             chainName: 'OMNI Network',
             nativeCurrency: {
               name: 'OMNI',
@@ -1121,10 +1264,10 @@
               decimals: 18
             },
             rpcUrls: ['http://127.0.0.1:8545'],
-            iconUrls: ['https://raw.githubusercontent.com/X3DevBlake/omni-network/6afa5a2/omni-network-icon-256.png']
+            iconUrls: [NETWORK_LOGO_URL]
           }]
         });
-        alert("🎉 OMNI Network with official Diamond on Purple logo added to MetaMask!");
+        alert("🎉 OMNI Network with official Diamond on Black logo added to MetaMask!\n\nTIP: If you previously had OMNI Network in MetaMask, delete it first in Settings -> Networks to see the updated Diamond on Black icon immediately!");
       } catch (error) {
         console.error(error);
         alert("Error adding OMNI Network to MetaMask: " + error.message);
