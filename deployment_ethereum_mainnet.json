@@ -1,0 +1,12 @@
+{
+  "network": "localhost",
+  "chainId": 39821,
+  "address": "0x18E317A7D70d8fBf8e6E893616b52390EbBdb629",
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "initialOwner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "totalSupply": "1000000000",
+  "symbol": "OMNI",
+  "name": "OMNI Token",
+  "decimals": 18,
+  "deployedAt": "2026-09-08T02:39:55.062Z"
+}

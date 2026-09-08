@@ -704,6 +704,9 @@
       </div>
     </div>
     <div class="header-actions">
+      <button id="btnMainnetDeploy" onclick="openMainnetDeployModal()" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px 16px; border-radius: 12px; font-family: 'Outfit'; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);">
+        <span>🚀 Ethereum Mainnet</span>
+      </button>
       <button id="btnSwitchNetwork" onclick="toggleNetwork()" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 10px 16px; border-radius: 12px; font-family: 'Outfit'; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
         <span>🌐 Switch Network</span>
       </button>
@@ -2048,20 +2051,27 @@ All balances updated!`);
 
         // Dynamically resolve correct contract address based on connected network
         let tokenAddress = token.address;
+        let netName = "OMNI Network";
         if (symbol === 'OMNI') {
-          if (netChainId === SEPOLIA_CHAIN_ID || netChainId === 11155111n) {
+          if (netChainId === 1n || netChainId === 1) {
+            tokenAddress = localStorage.getItem('omni_mainnet_address') || "0x523fA2008402BD45590113A1f7aC13E5C7075Fff"; // Ethereum Mainnet
+            netName = "Ethereum Mainnet";
+          } else if (netChainId === SEPOLIA_CHAIN_ID || netChainId === 11155111n) {
             tokenAddress = OMNI_TOKEN_SEPOLIA; // 0x523fA2008402BD45590113A1f7aC13E5C7075Fff on Sepolia
+            netName = "Ethereum Sepolia";
           } else if (netChainId === 8453n || netChainId === 84532n) {
-            tokenAddress = "0x36b58F5C1969B7b6591D752ea6F5486D069010AB"; // Base Sepolia
+            tokenAddress = "0x36b58F5C1969B7b6591D752ea6F5486D069010AB"; // Base
+            netName = "Base";
           } else {
             tokenAddress = OMNI_TOKENS.OMNI.address; // 0x5FbDB2315678afecb367f032d93F642f64180aa3 on OMNI Network
+            netName = "OMNI Network";
           }
         }
 
-        // Explicit fully-qualified HTTPS CDN logo URL
+        // Explicit fully-qualified HTTPS CDN logo URL (Green Alien token icon)
         let iconUrl = token.icon;
         if (symbol === 'OMNI') {
-          iconUrl = "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png";
+          iconUrl = "https://omni-network-39821.web.app/omni-token-icon-256.png";
         } else if (!iconUrl.startsWith("http")) {
           iconUrl = `https://omni-network-39821.web.app/${token.icon}`;
         }
@@ -2079,7 +2089,7 @@ All balances updated!`);
           }
         });
         if (wasAdded) {
-          alert(`🎉 ${token.symbol} added to MetaMask!\n\nContract Address: ${tokenAddress}\nNetwork: ${netChainId === SEPOLIA_CHAIN_ID ? "Ethereum Sepolia" : "OMNI Network"}`);
+          alert(`🎉 ${token.symbol} added to MetaMask!\n\nContract Address: ${tokenAddress}\nNetwork: ${netName}`);
         }
       } catch (err) {
         console.error(err);
@@ -2295,7 +2305,134 @@ Tx Hash: ${tx.hash}`);
     if (window.ethereum && window.ethereum.selectedAddress) {
       connectWallet();
     }
+
+    // --- Ethereum Mainnet 1-Click Deployment Engine ---
+    async function openMainnetDeployModal() {
+      if (!userAddress) {
+        await connectWallet();
+        if (!userAddress) return;
+      }
+      document.getElementById('mainnetDeployerAddr').innerText = userAddress;
+      document.getElementById('mainnetDeployModal').style.display = "flex";
+    }
+
+    function closeMainnetDeployModal() {
+      document.getElementById('mainnetDeployModal').style.display = "none";
+    }
+
+    async function executeMainnetDeploy() {
+      if (!signer || !userAddress) {
+        await connectWallet();
+        if (!signer) return;
+      }
+
+      const btn = document.getElementById('btnConfirmMainnetDeploy');
+      const origText = btn.innerText;
+
+      try {
+        btn.innerText = "Switching to Ethereum Mainnet (Chain 1)...";
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x1' }]
+          });
+        } catch(switchErr) {
+          throw new Error("Please switch your MetaMask network to Ethereum Mainnet (Chain ID 1)");
+        }
+
+        btn.innerText = "Fetching Contract Payload...";
+        const res = await fetch("mainnet_contract_payload.json");
+        const payload = await res.json();
+
+        btn.innerText = "Confirm Deployment in MetaMask...";
+        const factory = new ethers.ContractFactory(payload.abi, payload.bytecode, signer);
+        const contract = await factory.deploy(userAddress);
+
+        btn.innerText = "Broadcasting to Ethereum Mainnet...";
+        const receipt = await contract.waitForDeployment();
+        const mainnetAddress = await contract.getAddress();
+        localStorage.setItem('omni_mainnet_address', mainnetAddress);
+
+        try {
+          btn.innerText = "Adding Token to MetaMask Assets...";
+          await window.ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20',
+              options: {
+                address: mainnetAddress,
+                symbol: 'OMNI',
+                decimals: 18,
+                image: 'https://omni-network-39821.web.app/omni-token-icon-256.png'
+              }
+            }
+          });
+        } catch(watchErr) {
+          console.log("Auto-watchAsset skipped/dismissed:", watchErr);
+        }
+
+        alert(`🎉 CONGRATULATIONS!\n\nOMNI Token successfully deployed to Ethereum Mainnet (Chain ID 1)!\n\nContract Address: ${mainnetAddress}\nOwner & 1B Supply Recipient: ${userAddress}\n\nEtherscan: https://etherscan.io/token/${mainnetAddress}`);
+        
+        btn.innerText = origText;
+        closeMainnetDeployModal();
+      } catch(err) {
+        console.error(err);
+        btn.innerText = origText;
+        if (err.code === 4001 || (err.message && err.message.includes("user rejected"))) {
+          alert("❌ Deployment canceled in MetaMask.");
+        } else {
+          alert("❌ Mainnet Deployment Error: " + (err.reason || err.message));
+        }
+      }
+    }
+
   </script>
+
+
+  <!-- Ethereum Mainnet Deployment Modal -->
+  <div id="mainnetDeployModal" class="modal-backdrop-custom">
+    <div class="modal-card-custom" style="max-width: 520px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div style="font-weight: 800; font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <span>🚀</span> Deploy OMNI to Ethereum Mainnet
+        </div>
+        <button onclick="closeMainnetDeployModal()" style="background:none; border:none; color:var(--text-muted); font-size: 24px; cursor:pointer; padding:0; line-height:1;">&times;</button>
+      </div>
+
+      <div style="background: rgba(8, 6, 18, 0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 8px;">Token Specifications (Production Mainnet):</div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+          <span>Target Network:</span>
+          <strong style="color: #fff;">Ethereum Mainnet (Chain ID 1)</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+          <span>Total Supply:</span>
+          <strong style="color: #10b981;">1,000,000,000 OMNI (100% Fixed)</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+          <span>Initial Recipient:</span>
+          <span id="mainnetDeployerAddr" style="font-family: 'JetBrains Mono'; color: #c084fc; font-size: 11px;">--</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
+          <span>Features:</span>
+          <strong style="color: #fff;">EIP-2612 Permit • Burnable • Ownable2Step</strong>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+        Deploying to Ethereum Mainnet executes directly from your MetaMask wallet. All 1 Billion OMNI tokens will be minted directly to your connected address. Estimated gas: ~0.005 – 0.012 ETH.
+      </div>
+
+      <button id="btnConfirmMainnetDeploy" class="btn-swap-main" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); margin-bottom: 12px;" onclick="executeMainnetDeploy()">
+        🚀 Deploy via MetaMask on Ethereum Mainnet
+      </button>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 12px; font-size: 11px; color: var(--text-muted);">
+        <strong>CLI Deployment Option:</strong> Transfer ~0.01 ETH to deployer wallet <code>0x47FD9642e73Bd609bd8F3e837c092EcC1b4dE205</code> and run:
+        <pre style="background: #000; padding: 6px; border-radius: 6px; color: #00FD97; margin-top: 6px; overflow-x: auto;">npx hardhat run scripts/deploy_ethereum_mainnet.js --network mainnet</pre>
+      </div>
+    </div>
+  </div>
 
   <!-- Token Selector Modal -->
   <div id="tokenModal" class="modal-backdrop-custom">

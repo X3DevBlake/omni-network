@@ -1,9 +1,9 @@
 {
   "name": "OMNI Official Token List",
-  "timestamp": "2026-09-07T18:00:00.000Z",
+  "timestamp": "2026-09-08T02:40:00.000Z",
   "version": {
     "major": 1,
-    "minor": 0,
+    "minor": 1,
     "patch": 0
   },
   "tags": {
@@ -13,66 +13,66 @@
     },
     "l2": {
       "name": "Layer 2",
-      "description": "Tokens deployed across Ethereum Layer 2 rollups"
+      "description": "Tokens deployed across Ethereum Layer 2 rollups and AppChains"
     },
     "gaming": {
       "name": "Gaming",
-      "description": "In-game economy and metaverse utility tokens"
+      "description": "In-game economy, AI compute, and metaverse utility tokens"
     }
   },
-  "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
-  "keywords": ["omni", "defi", "layer2", "metaverse", "swap"],
+  "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png",
+  "keywords": ["omni", "defi", "layer2", "metaverse", "swap", "ethereum"],
   "tokens": [
+    {
+      "chainId": 1,
+      "address": "0x523fA2008402BD45590113A1f7aC13E5C7075Fff",
+      "name": "OMNI Token",
+      "symbol": "OMNI",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png",
+      "tags": ["defi", "l2", "gaming"],
+      "extensions": {
+        "website": "https://omni-network-39821.web.app",
+        "description": "Official Layer 1 canonical utility and governance token of the OMNI decentralized ecosystem."
+      }
+    },
+    {
+      "chainId": 39821,
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "name": "OMNI Token",
+      "symbol": "OMNI",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png",
+      "tags": ["defi", "l2", "gaming"],
+      "extensions": {
+        "website": "https://omni-network-39821.web.app",
+        "description": "Native AppChain and rollup utility token for OMNI Network."
+      }
+    },
     {
       "chainId": 11155111,
       "address": "0x523fA2008402BD45590113A1f7aC13E5C7075Fff",
       "name": "OMNI Network Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png",
       "tags": ["defi", "l2", "gaming"],
       "extensions": {
-        "website": "http://localhost:8082",
-        "description": "Core utility and governance token of the OMNI decentralized ecosystem."
+        "website": "https://omni-network-39821.web.app",
+        "description": "Core utility and governance token of the OMNI decentralized ecosystem (Sepolia)."
       }
     },
     {
       "chainId": 8453,
-
-      "address": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
-      "name": "OMNI Network Token",
+      "address": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+      "name": "OMNI Token",
       "symbol": "OMNI",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
+      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/921e9a8/omni-logo-256.png",
       "tags": ["defi", "l2", "gaming"],
       "extensions": {
-        "website": "http://localhost:8082",
-        "description": "Core utility and governance token of the OMNI decentralized ecosystem, featuring AI compute routing, DEX swaps, and multi-tier yield staking."
-      }
-    },
-    {
-      "chainId": 42161,
-      "address": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
-      "name": "OMNI Network Token",
-      "symbol": "OMNI",
-      "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
-      "tags": ["defi", "l2", "gaming"],
-      "extensions": {
-        "website": "http://localhost:8082",
-        "description": "Core utility and governance token of the OMNI decentralized ecosystem."
-      }
-    },
-    {
-      "chainId": 39821,
-      "address": "0x638A246F0Ec8883eF68280293FFE8Cfbabe61B44",
-      "name": "OMNI Native AppChain Token",
-      "symbol": "OMNI",
-      "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/X3DevBlake/omni-network/main/omni-logo-256.png",
-      "tags": ["defi", "gaming"],
-      "extensions": {
-        "website": "http://localhost:8082"
+        "website": "https://omni-network-39821.web.app",
+        "description": "OMNI cross-chain deployment on Base (Coinbase L2)."
       }
     }
   ]
