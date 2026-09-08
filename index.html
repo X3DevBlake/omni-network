@@ -16,6 +16,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OMNI Network | Portal, Swap & Bridge</title>
+  <link rel="icon" type="image/png" href="omni-network-icon-256.png">
+  <link rel="apple-touch-icon" href="omni-network-icon-256.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Share+Tech+Mono&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
@@ -1924,8 +1926,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";\n`;
               symbol: 'OMNI',
               decimals: 18
             },
-            rpcUrls: ['https://omni-network-39821.web.app/rpc'],
-            blockExplorerUrls: ['https://omni-explorer-39821.web.app']
+            rpcUrls: ['https://omni-network-39821.web.app/rpc', 'http://127.0.0.1:8545'],
+            blockExplorerUrls: ['https://omni-explorer-39821.web.app'],
+            iconUrls: ['https://omni-network-39821.web.app/omni-network-icon-256.png']
           }]
         });
       } catch (err) {
