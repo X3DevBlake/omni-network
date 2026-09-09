@@ -1,6 +1,6 @@
 {
   "chainId": 39821,
-  "rpcUrl": "http://localhost:8545",
+  "rpcUrl": "https://omni-rpc-gateway-853859261845.us-central1.run.app",
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "deployedAt": 1788831608025,
   "tokens": {

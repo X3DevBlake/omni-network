@@ -1,0 +1,33 @@
+{
+  "network": "OMNI Network (Chain ID 39821)",
+  "tokenAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "deadAddress": "0x000000000000000000000000000000000000dEaD",
+  "timestamp": "2026-09-09T01:10:02.321Z",
+  "epoch": 1788916202,
+  "initialGenesisCap": "1000000000.0",
+  "supplyBefore": "999999400.0",
+  "supplyAfter": "999999150.0",
+  "onchainSupplyContraction": "250.0",
+  "deadAddressBalance": "50.0",
+  "isDeflationaryVerified": true,
+  "executions": [
+    {
+      "type": "ERC20Burnable.burn(uint256)",
+      "amountOmni": "250.0",
+      "txHash": "0x4464be89c928b5232c7de0ce194480d2e39e934378dc0e1e4f18a79791c5083e",
+      "blockNumber": 24904,
+      "gasUsed": "33881",
+      "target": "0x0000000000000000000000000000000000000000",
+      "verified": true
+    },
+    {
+      "type": "Permanent Transfer to Dead Address",
+      "amountOmni": "50.0",
+      "txHash": "0x5751a9739b367f65ecfb11c6b2054596ad3b48df61865ca3fd6ea61441d1bdbd",
+      "blockNumber": 24905,
+      "gasUsed": "51388",
+      "target": "0x000000000000000000000000000000000000dEaD",
+      "verified": true
+    }
+  ]
+}
