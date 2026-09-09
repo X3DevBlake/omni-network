@@ -155,5 +155,8 @@
     "marketCapUsd": "$1,000,000,000",
     "priceFeedAddress": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7",
     "updatedAt": "2026-09-08T02:18:38.121Z"
+  },
+  "contracts": {
+    "presaleAutoSwapRouter": "0x359570B3a0437805D0a71457D61AD26a28cAC9A2"
   }
 }
